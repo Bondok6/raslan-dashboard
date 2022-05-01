@@ -1,0 +1,65 @@
+.cards {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3%;
+
+  .card-item {
+    width: 47%;
+    background-color: #fff;
+    padding: 12px;
+    border: 0;
+    border-radius: 7px;
+
+    @media (max-width: 1300px) {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  .card-item--ads {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &__img {
+      max-width: 200px;
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      .options {
+        align-self: flex-end;
+      }
+    }
+
+    &--large {
+      width: 100%;
+    }
+  }
+
+  .card-item--branch {
+    position: relative;
+
+    .options {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 10px;
+    }
+  }
+}
+
+.options {
+  img {
+    cursor: pointer;
+    margin: 0 5px;
+  }
+}

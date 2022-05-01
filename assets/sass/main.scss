@@ -1,0 +1,23 @@
+// base
+@import "./base/normalize.scss";
+@import "./base/typography.scss";
+@import "./base/global-rules.scss";
+
+// themes
+@import "./themes/light.scss";
+
+// layout
+@import "./layout/buttons.scss";
+@import "./layout/forms.scss";
+
+// pages
+@import "./pages/login";
+@import "./pages/statistics";
+@import "./pages/testimonials";
+@import "./pages/orders";
+
+// components
+@import "./components/sidebar.scss";
+@import "./components/navbar.scss";
+@import "./components/popup.scss";
+@import "./components/cards.scss";

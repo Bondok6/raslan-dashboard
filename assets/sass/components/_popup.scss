@@ -1,0 +1,45 @@
+.popup {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.2);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__inner {
+    background: #fff;
+    max-height: 90vh;
+
+    .calender {
+      overflow-y: scroll;
+      padding: 10px;
+      max-width: 500px;
+      height: 500px;
+    }
+  }
+
+  &__exit {
+    position: relative;
+
+    .exit-icon {
+      position: absolute;
+      right: 10%;
+      top: -20px;
+      padding: 0 10px;
+      background: #fff;
+      border: none;
+      border-radius: 7px;
+      color: red;
+      font-size: 30px;
+      box-shadow: -5px 5px 5px #555;
+      transition: transform 0.6s;
+
+      &:focus,
+      &:hover {
+        transform: scale(0.9);
+      }
+    }
+  }
+}

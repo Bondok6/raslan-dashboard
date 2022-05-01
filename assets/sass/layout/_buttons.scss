@@ -1,0 +1,32 @@
+$buttonFontSize: 16px;
+$buttonRadius: 5px;
+
+.primary-btn,
+.secondary-btn {
+  background-color: $primaryColor;
+  padding: 9px;
+  border: none;
+  color: #fff;
+  font-size: $buttonFontSize;
+  border-radius: $buttonRadius;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  background-color: $primaryColor;
+  transition: 0.4s;
+}
+
+.secondary-btn:hover {
+  background-color: #fff;
+  color: $primaryColor;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+}
+
+.btn-fill {
+  width: 100% !important;
+}

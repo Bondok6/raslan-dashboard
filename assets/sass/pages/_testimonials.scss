@@ -1,0 +1,39 @@
+.testimonials-page {
+  .testimonials {
+    background-color: #fff;
+    min-height: calc(100vh - 120px);
+    padding: 30px;
+
+    &__key {
+      color: $secondaryColor;
+    }
+
+    &__value {
+      color: $secondaryColor;
+      background-color: #f8f8f8;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    &__list {
+      padding: 20px 0;
+    }
+
+    &__list-item {
+      margin-bottom: 15px;
+
+      span {
+        color: $primaryColor;
+        font-size: 25px;
+      }
+
+      h6 {
+        margin-bottom: 0;
+      }
+    }
+
+    .el-rate__icon {
+      font-size: 28px !important;
+    }
+  }
+}

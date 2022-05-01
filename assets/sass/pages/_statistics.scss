@@ -1,0 +1,105 @@
+.home {
+    &__statistics {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+    }
+
+    .statistics {
+        &__card {
+            padding: 25px 15px;
+            background-color: #FFF;
+            border-radius: 10px;
+
+
+            &:first-of-type {
+                .stats-info__img {
+                    background: #02bc772e;
+                }
+            }
+
+            &:nth-of-type(2) {
+                .stats-info__img {
+                    background: #ffd95038;
+                }
+            }
+
+            &:nth-of-type(3) {
+                .stats-info__img {
+                    background: #ff23661f;
+                }
+            }
+
+            &:last-of-type {
+                .stats-info__img {
+                    background: #408aff1f;
+                }
+            }
+
+            .stats-info {
+
+
+                &__title {
+                    margin-bottom: 0;
+                }
+
+                &__img {
+                    padding: 10px;
+                    border-radius: 7px;
+                    width: 50px;
+                    height: 50px;
+                }
+            }
+        }
+    }
+
+    &__testimonials {
+        >h4 {
+            font-weight: 400;
+            margin: 15px 0;
+        }
+
+        .testimonials {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
+
+            @media screen and (max-width: 430px) {
+                grid-template-columns: repeat(auto-fill, 100%);
+            }
+
+            &__card {
+                padding: 15px;
+                background-color: #FFF;
+                border-radius: 10px;
+                position: relative;
+
+                >div {
+                    display: flex;
+                    gap: 15px;
+                    align-items: center;
+                }
+
+                .icon-btn {
+                    position: absolute;
+                    left: 10px;
+                    top: 10px;
+                }
+            }
+
+            &__key {
+                padding: 7px 24px;
+                background-color: #FAFAFA;
+                border-radius: 4px;
+                font-weight: 400;
+            }
+
+            &__value {
+                color: $secondaryColor;
+
+            }
+        }
+    }
+
+}

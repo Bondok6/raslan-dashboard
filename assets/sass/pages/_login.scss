@@ -1,0 +1,24 @@
+.login-page {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+
+    &__form-container {
+
+        width: 100%;
+        max-width: 800px;
+        margin: 10px auto;
+        padding: 25px 10px 15px;
+        background: #FFF;
+        border-radius: 15px;
+        box-shadow: 0px 2px 7px 7px #eeeeee57;
+
+    }
+
+    .el-form {
+        margin-top: -80px;
+        z-index: 2;
+        position: relative;
+    }
+}
