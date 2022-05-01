@@ -96,6 +96,30 @@
 
       <button class="secondary-btn w-50 mb-2 me-4">تأكيد</button>
     </UIPopupForm>
+
+    <!-- <div class="cards">
+      <div class="card-item card-item--orders">
+        <div class="d-flex gap-4">
+          <div class="date">
+            <div class="my-2">5 مايو 2021</div>
+            <div>06:55 PM</div>
+          </div>
+          <div>
+            <div class="my-2">
+              <span class="badge bg-secondary">اسم العميل</span>
+              <span>محمد أحمد محمود</span>
+            </div>
+            <div>
+              <span class="badge bg-secondary">رقم الهاتف</span>
+              <span>01017067685</span>
+            </div>
+          </div>
+        </div>
+        <div class="order-btn">
+          <button type="button" class="secondary-btn">التفاصيل</button>
+        </div>
+      </div>
+    </div> -->
   </section>
 </template>
 

@@ -21,6 +21,23 @@
       flex-direction: column;
       gap: 10px;
     }
+
+    &--orders {
+      padding: 0;
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+
+      .date {
+        background-color: $primaryColor;
+        color: #fff;
+        padding: 12px;
+        border-radius: 7px;
+      }
+      .order-btn {
+        padding: 12px;
+      }
+    }
   }
 
   .card-item--ads {
