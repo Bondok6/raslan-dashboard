@@ -3,7 +3,6 @@
 ## Built With
 
 - Nuxt.js
-- API
 - Sass
 
 ## Live Demo 🌐
