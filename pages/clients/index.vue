@@ -57,10 +57,10 @@
       caption="قم بإضافة العلاء التابعين للمعمل "
     />
 
-    <div class="cards">
+    <!-- <div class="cards">
       <div class="card-item d-flex justify-content-around">
         <div>
-          <div class="d-flex gap-2 align-items-center mb-3">
+          <div class="d-flex gap-2 align-items-center">
             <h6 class="key">اسم العميل</h6>
             <h6 class="value">احمد محمد محمود</h6>
           </div>
@@ -69,21 +69,21 @@
             <h6 class="value">01017067685</h6>
           </div>
         </div>
-        <div class="">
-          <div class="options d-flex mb-3">
+        <div>
+          <div class="options d-flex">
             <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
             <img src="@/assets/imgs/delete-icon.png" alt="delete icon" />
           </div>
           <button
             @click="$router.push('clients/5')"
             type="button"
-            class="btn secondary-btn"
+            class="btn secondary-btn mt-3"
           >
             تحاليل
           </button>
         </div>
       </div>
-    </div>
+    </div> -->
   </section>
 </template>
 
