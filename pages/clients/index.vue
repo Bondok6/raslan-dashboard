@@ -1,5 +1,5 @@
 <template>
-  <section class="ads-page">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة عميل" />
 
     <div class="search w-50">
@@ -57,16 +57,16 @@
       caption="قم بإضافة العلاء التابعين للمعمل "
     />
 
-    <!-- <div class="cards">
+    <div class="cards">
       <div class="card-item d-flex justify-content-around">
         <div>
           <div class="d-flex gap-2 align-items-center mb-3">
-            <span class="badge bg-secondary">اسم العميل</span>
-            <h6>احمد محمد محمود</h6>
+            <h6 class="key">اسم العميل</h6>
+            <h6 class="value">احمد محمد محمود</h6>
           </div>
           <div class="d-flex gap-3 align-items-center">
-            <span class="badge bg-secondary">رقم الهاتف</span>
-            <h6>01017067685</h6>
+            <h6 class="key">رقم الهاتف</h6>
+            <h6 class="value">01017067685</h6>
           </div>
         </div>
         <div class="">
@@ -74,10 +74,16 @@
             <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
             <img src="@/assets/imgs/delete-icon.png" alt="delete icon" />
           </div>
-          <button type="button" class="btn secondary-btn">تحاليل</button>
+          <button
+            @click="$router.push('clients/5')"
+            type="button"
+            class="btn secondary-btn"
+          >
+            تحاليل
+          </button>
         </div>
       </div>
-    </div> -->
+    </div>
   </section>
 </template>
 

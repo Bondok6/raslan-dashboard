@@ -105,13 +105,13 @@
             <div>06:55 PM</div>
           </div>
           <div>
-            <div class="my-2">
-              <span class="badge bg-secondary">اسم العميل</span>
-              <span>محمد أحمد محمود</span>
+            <div class="my-2 d-flex align-items-center gap-2">
+              <h6 class="key">اسم العميل</h6>
+              <h6 class="value">محمد أحمد محمود</h6>
             </div>
-            <div>
-              <span class="badge bg-secondary">رقم الهاتف</span>
-              <span>01017067685</span>
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="key">رقم الهاتف</h6>
+              <h6 class="value">01017067685</h6>
             </div>
           </div>
         </div>

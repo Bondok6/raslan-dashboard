@@ -1,5 +1,5 @@
 <template>
-  <section class="ads-page">
+  <section>
     <UIAddButton @click="showAboutForm" buttonText="اضافة معلومات" />
 
     <UIEmpty

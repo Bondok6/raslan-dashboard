@@ -1,5 +1,5 @@
 <template>
-  <section class="ads-page">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة منطقة" />
 
     <UIPopupForm
@@ -48,15 +48,15 @@
     />
 
     <!-- <div class="cards">
-      <div class="card-item card-item--branch w-25 my-2">
-        <div class="d-flex flex-column gap-2">
-          <div>
-            <span class="badge bg-secondary w-25">المحافظة</span>
-            <span class="px-2">القاهرة</span>
+      <div class="card-item card-item--branch w-50 my-2">
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <h6 class="key">المحافظة</h6>
+            <h6 class="value">القاهرة</h6>
           </div>
-          <div>
-            <span class="badge bg-secondary w-25">المنطقة</span>
-            <span class="px-2">الشيخ زايد</span>
+          <div class="d-flex align-items-center gap-2">
+            <h6 class="key">المنطقة</h6>
+            <h6 class="value">الشيخ زايد</h6>
           </div>
         </div>
         <div class="options">

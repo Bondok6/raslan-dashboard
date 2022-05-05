@@ -1,5 +1,5 @@
 <template>
-  <section class="branches-page">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة فرع" />
 
     <UIEmpty
@@ -70,22 +70,22 @@
 
     <!-- <div class="cards">
       <div class="card-item card-item--branch">
-        <div class="d-flex flex-column gap-2">
-          <div>
-            <span class="badge bg-secondary w-25">المحافظة</span>
-            <span class="px-2">القاهرة</span>
+        <div class="d-flex flex-column">
+          <div class="d-flex align-items-center gap-2">
+            <h6 class="key">المحافظة</h6>
+            <h6 class="value">القاهرة</h6>
           </div>
-          <div>
-            <span class="badge bg-secondary w-25">المنطقة</span>
-            <span class="px-2">الشيخ زايد</span>
+          <div class="d-flex align-items-center gap-2">
+            <h6 class="key">المنطقة</h6>
+            <h6 class="value">الشيخ زايد</h6>
           </div>
-          <div>
-            <span class="badge bg-secondary w-25">العنوان</span>
-            <span class="px-2">مول 4 ميكس - بيفرلي هيلز</span>
+          <div class="d-flex align-items-center gap-2">
+            <h6 class="key">العنوان</h6>
+            <h6 class="value">مول 4 ميكس - بيفرلي هيلز</h6>
           </div>
-          <div>
-            <span class="badge bg-secondary w-25">الموقع</span>
-            <a class="px-2" href="https://goo.gl/maps/jgpy6eWRVjhgnBdXA"
+          <div class="d-flex align-items-center gap-2">
+            <h6 class="key">الموقع</h6>
+            <a class="value" href="https://goo.gl/maps/jgpy6eWRVjhgnBdXA"
               >اضغط هنا</a
             >
           </div>

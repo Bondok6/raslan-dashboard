@@ -1,5 +1,5 @@
 <template>
-  <section class="ads-page">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة باقة" />
     <div class="search w-50">
       <img

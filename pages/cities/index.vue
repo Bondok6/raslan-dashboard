@@ -1,5 +1,5 @@
 <template>
-  <section class="ads-page">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة محافظة" />
 
     <UIPopupForm

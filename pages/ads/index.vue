@@ -1,5 +1,5 @@
 <template>
-  <section class="ads-page">
+  <section class="page ads-page">
     <UIAddButton @click="toggleModal" buttonText="اضافة اعلان" />
 
     <UIPopupForm

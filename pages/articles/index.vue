@@ -1,5 +1,5 @@
 <template>
-  <section class="ads-page">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة مقالة" />
     <div class="search w-50">
       <img
@@ -100,9 +100,9 @@
 
     <!-- <div class="cards">
       <div class="card-item d-flex align-items-center justify-content-around">
-        <div class="d-flex gap-2">
-          <span class="badge bg-secondary">اسم المقالة</span>
-          <h6>مشاكل القلب وعلاقته بضيق التنفس</h6>
+        <div class="d-flex gap-2 align-items-center">
+          <h6 class="key">اسم المقالة</h6>
+          <h6 class="value">مشاكل القلب وعلاقته بضيق التنفس</h6>
         </div>
         <div class="options">
           <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />

@@ -1,10 +1,10 @@
+// themes
+@import "./themes/light.scss";
+
 // base
 @import "./base/normalize.scss";
 @import "./base/typography.scss";
 @import "./base/global-rules.scss";
-
-// themes
-@import "./themes/light.scss";
 
 // layout
 @import "./layout/buttons.scss";
@@ -21,3 +21,5 @@
 @import "./components/navbar.scss";
 @import "./components/popup.scss";
 @import "./components/cards.scss";
+@import "./components/search.scss";
+@import "./components/ckeditor.scss";
