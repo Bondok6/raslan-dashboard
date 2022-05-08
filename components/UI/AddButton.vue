@@ -10,8 +10,5 @@ export default {
   props: {
     buttonText: String,
   },
-  methods: {
-    handleClick() {},
-  },
 };
 </script>
