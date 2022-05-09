@@ -2,8 +2,8 @@
   <div class="navbar">
     <div class="d-flex justify-content-between w-100 align-items-center">
       <div class="user-info">
-        <h6 class="user-info__name">{{ userName }}</h6>
-        <span class="user-info__role">{{ role }}</span>
+        <h6 class="user-info__name">{{ $auth.user.username }}</h6>
+        <span class="user-info__role">{{ $auth.user.role }}</span>
       </div>
 
       <div class="navbar-actions d-flex justify-content-between gap-3">
@@ -36,7 +36,6 @@
 
 <script>
 export default {
-  props: ["userName", "role"],
   methods: {
     logout() {
       this.$auth.logout();
