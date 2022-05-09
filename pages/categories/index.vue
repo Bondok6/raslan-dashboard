@@ -116,6 +116,9 @@ export default {
   data() {
     return {
       modalTrigger: false,
+      categories: [],
+      page: 1,
+      totalPages: 1,
     };
   },
   methods: {

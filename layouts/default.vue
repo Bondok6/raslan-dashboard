@@ -3,7 +3,7 @@
     <div class="d-flex">
       <sidebar />
       <div class="app-contant flex-fill px-3">
-        <navbar />
+        <navbar :userName="username" :role="role" />
         <nuxt />
       </div>
     </div>
@@ -18,8 +18,23 @@ export default {
     sidebar,
     navbar,
   },
+  data() {
+    return {
+      username: "",
+      role: "",
+    };
+  },
+  mounted() {
+    console.log(this.getUser());
+  },
+  methods: {
+    async getUser() {
+      const user = await this.$axios.get("/profile");
+      this.username = user.data.username;
+      this.role = user.data.role;
+    },
+  },
 };
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

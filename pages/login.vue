@@ -1,6 +1,10 @@
 <template>
   <div class="login-page">
     <section class="login-page__form-container">
+      <div class="alert alert-danger" role="alert" v-if="errorMsg">
+        Wrong Data, Please try again!
+      </div>
+
       <div class="row">
         <div class="col-md-12">
           <div class="text-center">
@@ -36,8 +40,10 @@
 <script>
 export default {
   layout: "full-page",
+  middleware: "loggedIn",
   data() {
     return {
+      errorMsg: false,
       loginForm: {},
       loginFormRules: {
         phone: [{ required: true, message: "Phone Is Required" }],
@@ -48,7 +54,23 @@ export default {
 
   methods: {
     submitLogin() {
-      this.$refs.loginForm.validate((valid) => {});
+      this.$refs.loginForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            await this.$auth.loginWith("local", { data: this.loginForm });
+          } catch (error) {
+            this.errorMsg = true;
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
   },
 };
