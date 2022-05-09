@@ -7,8 +7,13 @@
       :modalTrigger="modalTrigger"
       @update:modalTrigger="toggleModal"
     >
-      <el-form class="p-5 d-flex flex-column gap-2">
-        <el-form-item>
+      <el-form
+        class="p-5 d-flex flex-column gap-2"
+        :rules="adsFormRules"
+        :model="adsForm"
+        ref="adsForm"
+      >
+        <el-form-item label=" " prop="image">
           <el-upload
             class="upload-demo"
             drag
@@ -28,12 +33,12 @@
           </el-upload>
         </el-form-item>
 
-        <el-form-item label=" ">
+        <el-form-item label=" " prop="titleAr">
           <span> نبذة مختصرة عن الاعلان باللغة العربية </span>
           <el-input type="textarea" :rows="2"></el-input>
         </el-form-item>
 
-        <el-form-item label=" ">
+        <el-form-item label=" " prop="titleEn">
           <span> نبذة مختصرة عن الاعلان باللغةالانجليزية </span>
           <el-input dir="ltr" type="textarea" :rows="2"></el-input>
         </el-form-item>

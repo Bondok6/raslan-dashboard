@@ -40,12 +40,36 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     "@nuxtjs/axios",
+    "@nuxtjs/auth-next",
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: "/",
+    baseURL: "https://reslan-be.herokuapp.com/api/v1",
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        user: {
+          property: "",
+        },
+        endpoints: {
+          login: { url: "/login-phone", method: "post" },
+          user: { url: "/profile", method: "get" },
+          logout: false,
+        },
+        token: {
+          maxAge: false,
+        },
+        refreshToken: {
+          property: false,
+          maxAge: false,
+        },
+        autoLogout: false,
+      },
+    },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -55,5 +79,6 @@ export default {
 
   router: {
     base: "/raslan-dashboard/",
+    middleware: "auth",
   },
 };
