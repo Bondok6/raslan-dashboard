@@ -22,7 +22,7 @@
         :model="categoriesForm"
         ref="categoriesForm"
       >
-        <el-form-item label=" ">
+        <el-form-item label=" " prop="image">
           <input type="file" @change="onImageSeclected" required />
           <img :src="selectedImageUrl" alt="" v-if="selectedImageUrl" />
         </el-form-item>
