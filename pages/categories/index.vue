@@ -8,7 +8,7 @@
         alt="search icon"
         class="search__icon"
       />
-      <el-input placeholder="ابحث في الفئات"></el-input>
+      <el-input v-model="searchInput" placeholder="ابحث في الفئات"></el-input>
     </div>
 
     <UIPopupForm
@@ -23,8 +23,10 @@
         ref="categoriesForm"
       >
         <el-form-item label=" ">
-          <input type="file" @change="onImageSeclected" />
+          <input type="file" @change="onImageSeclected" required />
+          <img :src="selectedImageUrl" alt="" v-if="selectedImageUrl" />
         </el-form-item>
+
         <el-form-item label=" " prop="titleAr">
           <span>اسم الفئة باللغة العربية</span>
           <el-input
@@ -62,7 +64,7 @@
       <div class="row my-2">
         <div
           class="col d-flex justify-content-between align-items-center bg-white p-2 mx-2 rounded"
-          v-for="category in categories"
+          v-for="category in filteredCategories"
           :key="category.id"
         >
           <div class="d-flex align-items-center gap-3">
@@ -97,7 +99,9 @@ export default {
   data() {
     return {
       modalTrigger: false,
+      searchInput: "",
       selectedImage: null,
+      selectedImageUrl: null,
       categoriesForm: {
         image: null,
       },
@@ -110,6 +114,9 @@ export default {
       totalPages: 1,
     };
   },
+  watch: {
+    searchedInput(value) {},
+  },
   async fetch() {
     await this.getCategories();
   },
@@ -118,14 +125,17 @@ export default {
       this.modalTrigger = !this.modalTrigger;
     },
     onImageSeclected(e) {
-      this.selectedImage = e.target.files[0];
-      const fd = new FormData();
-      fd.append("image", this.selectedImage, this.selectedImage.name);
-      this.categoriesForm.image = fd;
+      if (e.target.files.length > 0) {
+        this.selectedImage = this.categoriesForm.image = e.target.files[0];
+        this.selectedImageUrl = URL.createObjectURL(this.selectedImage);
+      }
     },
     addCategory() {
       this.$refs.categoriesForm.validate(async (valid) => {
         if (valid) {
+          if (!this.selectedImage) {
+            return;
+          }
           const loading = this.$loading({
             lock: true,
             text: "Loading",
@@ -133,8 +143,18 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            console.log(this.categoriesForm);
-            // await this.$axios.post("/category", { data: this.categoriesForm });
+            const fd = new FormData();
+            fd.append("titleAr", this.categoriesForm.titleAr);
+            fd.append("titleEn", this.categoriesForm.titleEn);
+            fd.append("image", this.categoriesForm.image);
+            fd.append("descriptionAr", this.categoriesForm.titleAr);
+            await this.$axios.post("/category", fd);
+            // Reset
+            this.categoriesForm = {};
+            this.selectedImage = null;
+            this.selectedImageUrl = null;
+            this.toggleModal();
+            this.getCategories();
           } catch (error) {
             console.log(error);
           } finally {
@@ -165,7 +185,8 @@ export default {
             type: "success",
             message: "Delete completed",
           });
-          // await this.$axios.delete(`category/${category.id}`);
+          await this.$axios.delete(`category/${category.id}`);
+          this.getCategories();
         })
         .catch(() => {
           this.$message({
@@ -173,6 +194,13 @@ export default {
             message: "Delete canceled",
           });
         });
+    },
+  },
+  computed: {
+    filteredCategories() {
+      return this.categories.filter((category) =>
+        category.titleAr.toLowerCase().includes(this.searchInput.toLowerCase())
+      );
     },
   },
 };
