@@ -188,6 +188,7 @@ export default {
   data() {
     return {
       modalTrigger: false,
+      input: "",
     };
   },
   methods: {

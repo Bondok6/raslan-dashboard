@@ -11,6 +11,8 @@
   &__inner {
     background: #fff;
     max-height: 90vh;
+    overflow: auto;
+    border-radius: 7px;
 
     .calender {
       overflow-y: scroll;
@@ -26,14 +28,14 @@
     .exit-icon {
       position: absolute;
       right: 10%;
-      top: -20px;
+      top: -5px;
       padding: 0 10px;
       background: #fff;
       border: none;
       border-radius: 7px;
       color: red;
       font-size: 30px;
-      box-shadow: -5px 5px 5px #555;
+      box-shadow: -2px 2px 5px #555, 2px 0px 5px #555;
       transition: transform 0.6s;
 
       &:focus,

@@ -114,6 +114,7 @@ export default {
         textareaAr: [{ required: true, message: "This Field Is Required" }],
         textareaEn: [{ required: true, message: "This Field Is Required" }],
       },
+      input: "",
     };
   },
   methods: {

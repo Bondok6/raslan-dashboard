@@ -135,6 +135,7 @@ export default {
       },
       contentHolderAr: "",
       contentHolderEn: "",
+      input: "",
     };
   },
   methods: {

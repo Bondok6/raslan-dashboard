@@ -14,43 +14,74 @@
         ref="adsForm"
       >
         <el-form-item label=" " prop="image">
-          <el-upload
-            class="upload-demo"
-            drag
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :file-list="fileList"
-            multiple
+          <label for="formFile" class="form-label"
+            >أضف الايقون التي تعبر عن بالفئة</label
           >
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">
-              قم بوضع الملف هنا او <em>اضغط للتحميل</em>
-            </div>
-            <div class="el-upload__tip" slot="tip">
-              يجب ان يكون الملف من نوع jpg/png وحجمة اصغر من 500kb
-            </div>
-          </el-upload>
+          <input
+            class="form-control"
+            type="file"
+            id="formFile"
+            @change="onImageSeclected"
+            accept="image/png, image/jpeg"
+          />
+          <div class="text-center m-2">
+            <img
+              :src="selectedImageUrl"
+              alt="preview"
+              v-if="selectedImageUrl"
+              width="150"
+              height="100"
+            />
+          </div>
         </el-form-item>
 
         <el-form-item label=" " prop="titleAr">
+          <span>عنوان الاعلان باللغة العربية</span>
+          <el-input
+            v-model="adsForm.titleAr"
+            placeholder="اكتب عنوان الاعلان باللغة العربية"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="descriptionAr">
           <span> نبذة مختصرة عن الاعلان باللغة العربية </span>
-          <el-input type="textarea" :rows="2"></el-input>
+          <el-input
+            type="textarea"
+            :rows="2"
+            v-model="adsForm.descriptionAr"
+          ></el-input>
         </el-form-item>
 
         <el-form-item label=" " prop="titleEn">
-          <span> نبذة مختصرة عن الاعلان باللغةالانجليزية </span>
-          <el-input dir="ltr" type="textarea" :rows="2"></el-input>
+          <span>اسم الاعلان باللغة الانجليزية</span>
+          <el-input
+            v-model="adsForm.titleEn"
+            placeholder="اكتب عنوان الاعلان باللغة الانجليزية"
+          ></el-input>
         </el-form-item>
 
-        <button type="submit" class="secondary-btn w-50 align-self-end">
+        <el-form-item label=" " prop="descriptionEn">
+          <span> نبذة مختصرة عن الاعلان باللغةالانجليزية </span>
+          <el-input
+            dir="ltr"
+            type="textarea"
+            :rows="2"
+            v-model="adsForm.descriptionEn"
+          ></el-input>
+        </el-form-item>
+
+        <button
+          type="submit"
+          class="secondary-btn w-50 align-self-end"
+          @click.prevent="addAds"
+        >
           اضافة اعلان
         </button>
       </el-form>
     </UIPopupForm>
 
     <UIEmpty
-      v-else
+      v-if="ads.length < 1"
       imgSrc="ads/no-ads.png"
       alt="no ads"
       caption="لم يتم إضافة اى إعلانات بعد"
@@ -78,6 +109,16 @@
         </div>
       </div>
     </div> -->
+
+    <el-pagination
+      class="position-fixed bottom-0"
+      background
+      layout="prev, pager, next"
+      v-model="page"
+      @current-change="getCategories"
+      :total="page * 10"
+    >
+    </el-pagination>
   </section>
 </template>
 
@@ -86,16 +127,80 @@ export default {
   data() {
     return {
       modalTrigger: false,
-      addAdsForm: {},
-      addAdsFormRules: {
-        textareaAr: [{ required: true, message: "This Field Is Required" }],
-        textareaEn: [{ required: true, message: "This Field Is Required" }],
+      selectedImage: null,
+      selectedImageUrl: null,
+      adsForm: {
+        image: null,
       },
+      adsFormRules: {
+        titleAr: [{ required: true, message: "Arabic title Is Required" }],
+        descriptionAr: [
+          { required: true, message: "English description Is Required" },
+        ],
+        titleEn: [{ required: true, message: "English title Is Required" }],
+        descriptionEn: [
+          { required: true, message: "English description Is Required" },
+        ],
+      },
+      ads: [],
+      page: 1,
+      totalPages: 1,
     };
+  },
+  async fetch() {
+    await this.getAds();
   },
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    onImageSeclected(e) {
+      if (e.target.files.length > 0) {
+        this.selectedImage = this.adsForm.image = e.target.files[0];
+        this.selectedImageUrl = URL.createObjectURL(this.selectedImage);
+      }
+    },
+    addAds() {
+      this.$refs.adsForm.validate(async (valid) => {
+        if (valid) {
+          if (!this.selectedImage) {
+            return;
+          }
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            const fd = new FormData();
+            fd.append("titleAr", this.adsForm.titleAr);
+            fd.append("descriptionAr", this.adsForm.titleAr);
+            fd.append("titleEn", this.adsForm.titleEn);
+            fd.append("descriptionAr", this.adsForm.descriptionEn);
+            fd.append("image", this.adsForm.image);
+            await this.$axios.post("/ads", fd);
+            // Reset
+            this.adsForm = {};
+            this.selectedImage = null;
+            this.selectedImageUrl = null;
+            this.toggleModal();
+            // this.getAds();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
+    },
+    async getAds() {
+      let params = { page: this.page };
+      const adsRes = await this.$axios.get("/ads?branches=10", { params });
+      this.ads = await adsRes.data.docs;
+      this.totalPages = await adsRes.data.totalPages;
+      this.page = await adsRes.data.page;
+      console.log(this.ads);
     },
   },
 };

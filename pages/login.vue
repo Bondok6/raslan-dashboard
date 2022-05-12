@@ -19,7 +19,7 @@
 
             <el-form-item label=" " prop="password">
               <template #label>Password</template>
-              <el-input v-model="loginForm.password"></el-input>
+              <el-input type="password" v-model="loginForm.password"></el-input>
             </el-form-item>
           </el-form>
 

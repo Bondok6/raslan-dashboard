@@ -1,0 +1,119 @@
+<template>
+  <div>
+    <UIPopupForm
+      v-if="editModalTrigger"
+      :modalTrigger="modalTrigger"
+      @update:modalTrigger="toggleModal"
+    >
+      <el-form
+        class="p-5 d-flex flex-column gap-2"
+        :rules="editCityFormRules"
+        :model="editCityForm"
+        ref="editCityForm"
+      >
+        <el-form-item label=" " prop="nameAr">
+          <span>المحافظة</span>
+          <el-input
+            v-model="editCityForm.nameAr"
+            placeholder="اكتب اسم المحافظة الجديد باللغة العربية"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="nameEn">
+          <span>المحافظة باللغة الانجليزية</span>
+          <el-input
+            v-model="editCityForm.nameEn"
+            placeholder="اكتب اسم المحافظةالجديد باللغة الانجليزية"
+          ></el-input>
+        </el-form-item>
+
+        <button type="submit" class="secondary-btn" @click.prevent="editCity">
+          حفظ التغييرات
+        </button>
+      </el-form>
+    </UIPopupForm>
+
+    <div class="d-flex flex-wrap my-3">
+      <div class="d-flex justify-content-between bg-white p-3 m-3 rounded w-25">
+        <h6>{{ city.nameAr }}</h6>
+
+        <div class="options">
+          <img
+            src="@/assets/imgs/edit-icon.png"
+            alt="edit icon"
+            @click="toggleModal"
+          />
+          <img
+            src="@/assets/imgs/delete-icon.png"
+            alt="delete icon"
+            @click="deleteCity(city)"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      editModalTrigger: false,
+      city: {},
+      editCityForm: {},
+      editCityFormRules: {
+        nameAr: [{ required: true, message: "Arabic name Is Required" }],
+        nameEn: [{ required: true, message: "English name Is Required" }],
+      },
+    };
+  },
+  async fetch() {
+    this.getCity();
+  },
+  methods: {
+    toggleModal() {
+      this.editModalTrigger = !this.editModalTrigger;
+    },
+    async getCity() {
+      const cityRes = await this.$axios.get(`/city/${this.$route.params.id}`);
+      this.city = await cityRes.data;
+    },
+    deleteCity(city) {
+      this.$confirm(
+        `Are you sure you want to delete ${city.nameAr}`,
+        "Warning",
+        {
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(async () => {
+          this.$message({
+            type: "success",
+            message: "Delete completed",
+          });
+          await this.$axios.delete(`city/${city.id}`);
+          this.$router.push("/cities");
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Delete canceled",
+          });
+        });
+    },
+    async editCity() {
+      await this.$axios.patch(
+        `city/${this.$route.params.id}`,
+        this.editCityForm
+      );
+      this.editCityForm = {};
+      this.getCity();
+      this.toggleModal();
+    },
+  },
+};
+</script>
+
+<style></style>

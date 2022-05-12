@@ -17,12 +17,33 @@
         ref="aboutForm"
       >
         <el-form-item label=" " prop="image">
-          <input type="file" @change="onImageSeclected" required />
-          <img :src="selectedImageUrl" alt="" v-if="selectedImageUrl" />
+          <div class="d-flex">
+            <div class="w-50">
+              <label for="formFile" class="form-label"
+                >أضف الايقون التي تعبر عن بالفئة</label
+              >
+              <input
+                class="form-control"
+                type="file"
+                id="formFile"
+                @change="onImageSeclected"
+                accept="image/png, image/jpeg"
+              />
+            </div>
+            <div class="text-center w-50">
+              <img
+                :src="selectedImageUrl"
+                alt="preview"
+                v-if="selectedImageUrl"
+                width="150"
+                height="150"
+              />
+            </div>
+          </div>
         </el-form-item>
 
         <el-form-item label=" " prop="descriptionAr">
-          <span class="demo-input-label"> اضافة وصف باللغة العربية </span>
+          <span> اضافة وصف باللغة العربية </span>
           <el-input
             type="textarea"
             :rows="4"
@@ -32,7 +53,7 @@
         </el-form-item>
 
         <el-form-item label=" " prop="descriptionEn">
-          <span class="demo-input-label"> اضافة وصف باللغة الانجليزية </span>
+          <span> اضافة وصف باللغة الانجليزية </span>
           <el-input
             type="textarea"
             :rows="4"
@@ -67,12 +88,12 @@
       v-show="!formToggle"
     >
       <div class="card-item card-item--ads card-item--ads--large">
-        <div class="">
+        <div>
           <img
             :src="info.image"
             alt="ad image"
             class="card-item__img"
-            width="300"
+            width="150"
           />
         </div>
         <div class="w-100 d-flex flex-column">
@@ -80,7 +101,7 @@
             <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
             <img src="@/assets/imgs/delete-icon.png" alt="delete icon" />
           </div>
-          <p>
+          <p class="px-4">
             {{ info.descriptionAr }}
           </p>
         </div>

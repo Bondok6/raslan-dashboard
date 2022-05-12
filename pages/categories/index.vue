@@ -23,8 +23,25 @@
         ref="categoriesForm"
       >
         <el-form-item label=" " prop="image">
-          <input type="file" @change="onImageSeclected" required />
-          <img :src="selectedImageUrl" alt="" v-if="selectedImageUrl" />
+          <label for="formFile" class="form-label"
+            >أضف الايقون التي تعبر عن بالفئة</label
+          >
+          <input
+            class="form-control"
+            type="file"
+            id="formFile"
+            @change="onImageSeclected"
+            accept="image/png, image/jpeg"
+          />
+          <div class="text-center m-2">
+            <img
+              :src="selectedImageUrl"
+              alt="preview"
+              v-if="selectedImageUrl"
+              width="150"
+              height="100"
+            />
+          </div>
         </el-form-item>
 
         <el-form-item label=" " prop="titleAr">
@@ -61,14 +78,14 @@
     />
 
     <div class="mt-3">
-      <div class="row my-2">
+      <div class="d-flex flex-wrap">
         <div
-          class="col d-flex justify-content-between align-items-center bg-white p-2 mx-2 rounded"
+          class="d-flex justify-content-between align-items-center bg-white p-2 m-2 rounded w-25"
           v-for="category in filteredCategories"
           :key="category.id"
         >
           <div class="d-flex align-items-center gap-3">
-            <img :src="category.image" alt="category icon" class="w-25" />
+            <img :src="category.image" alt="category icon" width="70" />
             <h6>{{ category.titleAr }}</h6>
           </div>
           <div class="options">
@@ -113,9 +130,6 @@ export default {
       page: 1,
       totalPages: 1,
     };
-  },
-  watch: {
-    searchedInput(value) {},
   },
   async fetch() {
     await this.getCategories();
