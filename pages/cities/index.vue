@@ -39,8 +39,8 @@
     <!-- Update City -->
     <UIPopupForm
       v-if="editModalTrigger"
-      :modalTrigger="modalTrigger"
-      @update:modalTrigger="toggleModal"
+      :modalTrigger="editModalTrigger"
+      @update:modalTrigger="toggleEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column gap-2"
@@ -81,7 +81,7 @@
     <!-- Cities -->
     <div class="d-flex flex-wrap my-3">
       <div
-        class="d-flex justify-content-between bg-white p-3 m-3 rounded w-25"
+        class="d-flex justify-content-between bg-white p-3 m-3 rounded"
         v-for="city in allCities"
         :key="city.id"
       >
@@ -92,7 +92,7 @@
           <h6>{{ city.nameAr }}</h6>
         </nuxt-link>
 
-        <div class="options">
+        <div class="options me-5">
           <img
             src="@/assets/imgs/edit-icon.png"
             alt="edit icon"
@@ -143,8 +143,7 @@ export default {
     };
   },
   async fetch() {
-    this.getAllCities();
-    console.log(this.$refs);
+    await this.getAllCities();
   },
   methods: {
     toggleModal() {

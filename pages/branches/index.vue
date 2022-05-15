@@ -2,100 +2,188 @@
   <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة فرع" />
 
-    <UIEmpty
-      imgSrc="branches/no-branches.png"
-      alt="no branches"
-      caption="قم بإضافة الفروع الخاصة بالمعمل"
-    />
-
+    <!-- Add Branch -->
     <UIPopupForm
       v-if="modalTrigger"
       :modalTrigger="modalTrigger"
       @update:modalTrigger="toggleModal"
     >
-      <el-form action="" class="p-5 d-flex flex-column gap-2">
+      <el-form
+        class="p-5 d-flex flex-column gap-2"
+        :rules="branchFormRules"
+        :model="branchForm"
+        ref="branchForm"
+      >
         <div class="d-flex gap-3">
-          <div class="d-flex flex-column">
+          <el-form-item prop="city" class="d-flex flex-column">
             <span>اختر المحافظة</span>
-            <el-select v-model="value" placeholder="اختر المحافظة">
+            <el-select v-model="branchForm.city" placeholder="اختر المحافظة">
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="city in allCities"
+                :key="city.id"
+                :label="city.nameAr"
+                :value="city.id"
               >
               </el-option>
             </el-select>
-          </div>
+          </el-form-item>
 
-          <div class="d-flex flex-column">
+          <el-form-item prop="region" class="d-flex flex-column">
             <span>اختر المنطقة</span>
-            <el-select v-model="value" placeholder="اختر المنطقة">
+            <el-select v-model="branchForm.region" placeholder="اختر المنطقة">
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="region in allRegions"
+                :key="region.id"
+                :label="region.nameAr"
+                :value="region.id"
               >
               </el-option>
             </el-select>
-          </div>
+          </el-form-item>
         </div>
 
         <div class="d-flex gap-3">
-          <div class="d-flex flex-column">
-            <span> العنوان</span>
-            <el-input placeholder="العنوان" v-model="input"></el-input>
-          </div>
+          <el-form-item class="d-flex flex-column" prop="titleAr">
+            <span>العنوان باللغة العربية</span>
+            <el-input
+              placeholder="العنوان"
+              v-model="branchForm.titleAr"
+            ></el-input>
+          </el-form-item>
 
-          <div class="d-flex flex-column">
+          <el-form-item class="d-flex flex-column" prop="titleEn">
             <span>العنوان باللغة الانجليزية</span>
-            <el-input placeholder="العنوان" v-model="input"></el-input>
-          </div>
+            <el-input
+              placeholder="العنوان"
+              v-model="branchForm.titleEn"
+            ></el-input>
+          </el-form-item>
         </div>
 
-        <div class="div">
+        <el-form-item prop="location">
           <span>رابط الموقع على الخريطة</span>
           <el-input
             placeholder="ادخل رابط الموقع على الخريطة"
-            v-model="input"
+            v-model="branchForm.location"
           ></el-input>
-        </div>
+        </el-form-item>
 
-        <button type="submit" class="secondary-btn w-50 align-self-end">
+        <button
+          type="submit"
+          class="secondary-btn w-50 align-self-end"
+          @click.prevent="addBranch"
+        >
           اضافة فرع
         </button>
       </el-form>
     </UIPopupForm>
 
-    <!-- <div class="cards">
-      <div class="card-item card-item--branch">
+    <!-- UpdateBranch -->
+    <UIPopupForm
+      v-if="editModalTrigger"
+      :modalTrigger="editModalTrigger"
+      @update:modalTrigger="toggleEditModal"
+    >
+      <el-form
+        class="p-5 d-flex flex-column gap-2"
+        :rules="editBranchFormRules"
+        :model="editBranchForm"
+        ref="editBranchForm"
+      >
+        <div class="d-flex gap-3">
+          <el-form-item class="d-flex flex-column" prop="titleAr">
+            <span>العنوان الجديد باللغة العربية</span>
+            <el-input
+              placeholder="العنوان"
+              v-model="editBranchForm.titleAr"
+            ></el-input>
+          </el-form-item>
+
+          <el-form-item class="d-flex flex-column" prop="titleEn">
+            <span>العنوان الجديد باللغة الانجليزية</span>
+            <el-input
+              placeholder="العنوان"
+              v-model="editBranchForm.titleEn"
+            ></el-input>
+          </el-form-item>
+        </div>
+
+        <el-form-item prop="location">
+          <span>رابط الموقع على الخريطة</span>
+          <el-input
+            placeholder="ادخل رابط الموقع الجديد على الخريطة"
+            v-model="editBranchForm.location"
+          ></el-input>
+        </el-form-item>
+
+        <button
+          type="submit"
+          class="secondary-btn w-50 align-self-end"
+          @click.prevent="editBranch"
+        >
+          حفظ التغييرات
+        </button>
+      </el-form>
+    </UIPopupForm>
+
+    <!-- No Regions -->
+    <UIEmpty
+      v-if="!allBranches"
+      imgSrc="branches/no-branches.png"
+      alt="no branches"
+      caption="قم بإضافة الفروع الخاصة بالمعمل"
+    />
+
+    <!-- Regions -->
+    <div class="cards">
+      <div
+        class="card-item card-item--branch my-2"
+        v-for="branch in allBranches"
+        :key="branch.id"
+      >
         <div class="d-flex flex-column">
           <div class="d-flex align-items-center gap-2">
             <h6 class="key">المحافظة</h6>
-            <h6 class="value">القاهرة</h6>
+            <h6 class="value">{{ branch.city.nameAr }}</h6>
           </div>
           <div class="d-flex align-items-center gap-2">
             <h6 class="key">المنطقة</h6>
-            <h6 class="value">الشيخ زايد</h6>
+            <h6 class="value">{{ branch.region.nameAr }}</h6>
           </div>
           <div class="d-flex align-items-center gap-2">
             <h6 class="key">العنوان</h6>
-            <h6 class="value">مول 4 ميكس - بيفرلي هيلز</h6>
+            <h6 class="value">{{ branch.titleAr }}</h6>
           </div>
           <div class="d-flex align-items-center gap-2">
             <h6 class="key">الموقع</h6>
-            <a class="value" href="https://goo.gl/maps/jgpy6eWRVjhgnBdXA"
-              >اضغط هنا</a
-            >
+            <a class="value orange-text" :href="branch.location">اضغط هنا</a>
           </div>
         </div>
         <div class="options">
-          <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
-          <img src="@/assets/imgs/delete-icon.png" alt="delete icon" />
+          <img
+            src="@/assets/imgs/edit-icon.png"
+            alt="edit icon"
+            @click="toggleEditModal(branch.id)"
+          />
+          <img
+            src="@/assets/imgs/delete-icon.png"
+            alt="delete icon"
+            @click="deleteBranch(branch)"
+          />
         </div>
       </div>
-    </div> -->
+    </div>
+
+    <!-- Pagination -->
+    <el-pagination
+      class="position-fixed bottom-0"
+      background
+      layout="prev, pager, next"
+      v-model="page"
+      @current-change="getAllBranches"
+      :total="page * 10"
+    >
+    </el-pagination>
   </section>
 </template>
 
@@ -104,11 +192,133 @@ export default {
   data() {
     return {
       modalTrigger: false,
+      editModalTrigger: false,
+      allRegions: [],
+      allCities: [],
+      allBranches: [],
+      branchForm: {},
+      branchFormRules: {
+        city: [{ required: true, message: "City Is Required" }],
+        region: [{ required: true, message: "Region Is Required" }],
+        titleAr: [{ required: true, message: "Arabic title Is Required" }],
+        titleEn: [{ required: true, message: "English title Is Required" }],
+        location: [{ required: true, message: "Location Is Required" }],
+      },
+      editBranchForm: {},
+      editBranchFormRules: {
+        titleAr: [{ required: true, message: "Arabic title Is Required" }],
+        titleEn: [{ required: true, message: "English title Is Required" }],
+        location: [{ required: true, message: "Location Is Required" }],
+      },
+      targetId: null,
+      page: 1,
+      totalPages: 1,
     };
+  },
+  async fetch() {
+    await this.getAllCities();
+    await this.getAllRegions();
+    await this.getAllBranches();
   },
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    toggleEditModal(regionId) {
+      this.editModalTrigger = !this.editModalTrigger;
+      this.targetId = regionId;
+    },
+    async getAllCities() {
+      const citiesRes = await this.$axios.get("/cities");
+      this.allCities = await citiesRes.data.docs;
+    },
+    async getAllRegions() {
+      const regionsRes = await this.$axios.get("/regions");
+      this.allRegions = await regionsRes.data.docs;
+    },
+    async getAllBranches() {
+      let params = { page: this.page };
+      const branchesRes = await this.$axios.get("/branches", params);
+      this.allBranches = await branchesRes.data.docs;
+      this.totalPages = await branchesRes.data.totalPages;
+      this.page = await branchesRes.data.page;
+    },
+    addBranch() {
+      this.$refs.branchForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            await this.$axios.post(
+              `/region/${this.branchForm.region}/branch`,
+              this.branchForm
+            );
+            // Reset
+            this.branchForm = {};
+            this.toggleModal();
+            this.getAllBranches();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
+    },
+    deleteBranch(branch) {
+      this.$confirm(
+        `Are you sure you want to delete ${branch.titleAr}`,
+        "Warning",
+        {
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(async () => {
+          this.$message({
+            type: "success",
+            message: "Delete completed",
+          });
+          await this.$axios.delete(`branch/${branch.id}`);
+          this.getAllBranches();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Delete canceled",
+          });
+        });
+    },
+    editBranch() {
+      this.$refs.editBranchForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            await this.$axios.patch(
+              `/branch/${this.targetId}`,
+              this.editBranchForm
+            );
+            // Reset
+            this.editBranchForm = {};
+            this.toggleEditModal();
+            this.getAllBranches();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
   },
 };

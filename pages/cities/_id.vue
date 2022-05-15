@@ -2,8 +2,8 @@
   <div>
     <UIPopupForm
       v-if="editModalTrigger"
-      :modalTrigger="modalTrigger"
-      @update:modalTrigger="toggleModal"
+      :modalTrigger="editModalTrigger"
+      @update:modalTrigger="toggleEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column gap-2"
@@ -34,14 +34,14 @@
     </UIPopupForm>
 
     <div class="d-flex flex-wrap my-3">
-      <div class="d-flex justify-content-between bg-white p-3 m-3 rounded w-25">
+      <div class="d-flex justify-content-between bg-white p-3 m-3 rounded">
         <h6>{{ city.nameAr }}</h6>
 
-        <div class="options">
+        <div class="options me-5">
           <img
             src="@/assets/imgs/edit-icon.png"
             alt="edit icon"
-            @click="toggleModal"
+            @click="toggleEditModal"
           />
           <img
             src="@/assets/imgs/delete-icon.png"
@@ -68,10 +68,10 @@ export default {
     };
   },
   async fetch() {
-    this.getCity();
+    await this.getCity();
   },
   methods: {
-    toggleModal() {
+    toggleEditModal() {
       this.editModalTrigger = !this.editModalTrigger;
     },
     async getCity() {
