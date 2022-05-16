@@ -260,7 +260,7 @@ export default {
             // Reset
             this.branchForm = {};
             this.toggleModal();
-            this.getAllBranches();
+            await this.getAllBranches();
           } catch (error) {
             console.log(error);
           } finally {
@@ -285,7 +285,7 @@ export default {
             message: "Delete completed",
           });
           await this.$axios.delete(`branch/${branch.id}`);
-          this.getAllBranches();
+          await this.getAllBranches();
         })
         .catch(() => {
           this.$message({
@@ -310,8 +310,8 @@ export default {
             );
             // Reset
             this.editBranchForm = {};
-            this.toggleEditModal();
-            this.getAllBranches();
+            await this.toggleEditModal();
+            await this.getAllBranches();
           } catch (error) {
             console.log(error);
           } finally {

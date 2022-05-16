@@ -167,7 +167,7 @@ export default {
             // Reset
             this.cityForm = {};
             this.toggleModal();
-            this.getAllCities();
+            await this.getAllCities();
           } catch (error) {
             console.log(error);
           } finally {
@@ -199,7 +199,7 @@ export default {
             message: "Delete completed",
           });
           await this.$axios.delete(`city/${city.id}`);
-          this.getAllCities();
+          await this.getAllCities();
         })
         .catch(() => {
           this.$message({
@@ -225,7 +225,7 @@ export default {
             // Reset
             this.editCityForm = {};
             this.toggleEditModal();
-            this.getAllCities();
+            await this.getAllCities();
           } catch (error) {
             console.log(error);
           } finally {

@@ -14,6 +14,7 @@
       ></el-input>
     </div>
 
+    <!-- Add Doctor -->
     <UIPopupForm
       v-if="modalTrigger"
       :modalTrigger="modalTrigger"
@@ -94,6 +95,65 @@
       </el-form>
     </UIPopupForm>
 
+    <!-- Update Doctor -->
+    <UIPopupForm
+      v-if="editModalTrigger"
+      :modalTrigger="editModalTrigger"
+      @update:modalTrigger="toggleEditModal"
+    >
+      <el-form
+        class="p-5 d-flex flex-column gap-2"
+        :rules="editTeamFormRules"
+        :model="editTeamForm"
+        ref="editTeamForm"
+      >
+        <div class="d-flex gap-2">
+          <el-form-item label=" " prop="nameAr">
+            <span> اسم الطبيب الجديد باللغة العربية </span>
+            <el-input
+              v-model="editTeamForm.nameAr"
+              placeholder="اكتب اسم الطبيب باللغة العربية"
+            ></el-input>
+          </el-form-item>
+
+          <el-form-item label=" " prop="nameEn">
+            <span> اسم الطبيب الجديد باللغة الانجليزية </span>
+            <el-input
+              v-model="editTeamForm.nameEn"
+              placeholder="اكتب اسم الطبيب باللغة الانجليزية"
+            ></el-input>
+          </el-form-item>
+        </div>
+
+        <el-form-item label=" " prop="descriptionAr">
+          <span> نبذة مختصرة عن الطبيب باللغة العربية </span>
+          <el-input
+            type="textarea"
+            :rows="2"
+            v-model="editTeamForm.descriptionAr"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="descriptionEn">
+          <span> نبذة مختصرة عن الطبيب باللغةالانجليزية </span>
+          <el-input
+            dir="ltr"
+            type="textarea"
+            :rows="2"
+            v-model="editTeamForm.descriptionEn"
+          ></el-input>
+        </el-form-item>
+
+        <button
+          type="submit"
+          class="secondary-btn w-50 align-self-end"
+          @click.prevent="editDoctor"
+        >
+          حفظ التغييرات
+        </button>
+      </el-form>
+    </UIPopupForm>
+
     <UIEmpty
       v-if="!team"
       imgSrc="doctors/no-doctors.png"
@@ -112,8 +172,18 @@
         </nuxt-link>
         <div class="d-flex flex-column w-100">
           <div class="align-self-end">
-            <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
-            <img src="@/assets/imgs/delete-icon.png" alt="delete icon" />
+            <img
+              src="@/assets/imgs/edit-icon.png"
+              alt="edit icon"
+              @click="toggleEditModal(doctor.id)"
+              role="button"
+            />
+            <img
+              src="@/assets/imgs/delete-icon.png"
+              alt="delete icon"
+              @click="deleteDoctor(doctor)"
+              role="button"
+            />
           </div>
           <h6>{{ doctor.nameAr }}</h6>
           <p>
@@ -141,6 +211,7 @@ export default {
   data() {
     return {
       modalTrigger: false,
+      editModalTrigger: false,
       searchInput: "",
       selectedImage: null,
       selectedImageUrl: null,
@@ -148,26 +219,43 @@ export default {
         image: null,
       },
       teamFormRules: {
+        image: [{ required: true, message: "Image Is Required" }],
         nameAr: [{ required: true, message: "Arabic name Is Required" }],
         nameEn: [{ required: true, message: "English name Is Required" }],
-        descriptoinAr: [
+        descriptionAr: [
           { required: true, message: "Arabic descriptoin Is Required" },
         ],
-        descriptoinEn: [
+        descriptionEn: [
           { required: true, message: "English descriptoin Is Required" },
         ],
       },
       team: null,
       page: 1,
       totalPages: 1,
+      targetId: null,
+      editTeamForm: {},
+      editTeamFormRules: {
+        nameAr: [{ required: true, message: "Arabic name Is Required" }],
+        nameEn: [{ required: true, message: "English name Is Required" }],
+        descriptionAr: [
+          { required: true, message: "Arabic descriptoin Is Required" },
+        ],
+        descriptionEn: [
+          { required: true, message: "English descriptoin Is Required" },
+        ],
+      },
     };
   },
   async fetch() {
-    this.getTeam();
+    await this.getTeam();
   },
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    toggleEditModal(doctorId) {
+      this.editModalTrigger = !this.editModalTrigger;
+      this.targetId = doctorId;
     },
     onImageSeclected(e) {
       if (e.target.files.length > 0) {
@@ -200,7 +288,7 @@ export default {
             this.selectedImage = null;
             this.selectedImageUrl = null;
             this.toggleModal();
-            // this.getTeam();
+            await this.getTeam();
           } catch (error) {
             console.log(error);
           } finally {
@@ -216,6 +304,57 @@ export default {
       console.log(this.team);
       this.totalPages = await teamRes.data.totalPages;
       this.page = await teamRes.data.page;
+    },
+    deleteDoctor(doctor) {
+      this.$confirm(
+        `Are you sure you want to delete ${doctor.nameAr}`,
+        "Warning",
+        {
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(async () => {
+          this.$message({
+            type: "success",
+            message: "Delete completed",
+          });
+          await this.$axios.delete(`team/${doctor.id}`);
+          await this.getTeam();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Delete canceled",
+          });
+        });
+    },
+    editDoctor() {
+      this.$refs.editTeamForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            await this.$axios.patch(
+              `/team/${this.targetId}`,
+              this.editTeamForm
+            );
+            // Reset
+            this.editTeamForm = {};
+            await this.toggleEditModal();
+            await this.getTeam();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
   },
   computed: {

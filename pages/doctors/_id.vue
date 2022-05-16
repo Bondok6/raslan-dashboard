@@ -1,51 +1,30 @@
 <template>
   <div>
+    <!-- Update Doctor -->
     <UIPopupForm
       v-if="editModalTrigger"
-      :modalTrigger="modalTrigger"
-      @update:modalTrigger="toggleModal"
+      :modalTrigger="editModalTrigger"
+      @update:modalTrigger="toggleEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column gap-2"
-        :rules="teamEditFormRules"
-        :model="teamEditForm"
-        ref="teamForm"
+        :rules="editTeamFormRules"
+        :model="editTeamForm"
+        ref="editTeamForm"
       >
-        <el-form-item label=" " prop="image">
-          <label for="formFile" class="form-label"
-            >أضف الصورة الخاصة بدكتور المعمل</label
-          >
-          <input
-            class="form-control"
-            type="file"
-            id="formFile"
-            @change="onImageSeclected"
-            accept="image/png, image/jpeg"
-          />
-          <div class="text-center m-2">
-            <img
-              :src="selectedImageUrl"
-              alt="preview"
-              v-if="selectedImageUrl"
-              width="150"
-              height="100"
-            />
-          </div>
-        </el-form-item>
-
         <div class="d-flex gap-2">
           <el-form-item label=" " prop="nameAr">
-            <span> اسم الطبيب باللغة العربية </span>
+            <span> اسم الطبيب الجديد باللغة العربية </span>
             <el-input
-              v-model="teamEditForm.nameAr"
+              v-model="editTeamForm.nameAr"
               placeholder="اكتب اسم الطبيب باللغة العربية"
             ></el-input>
           </el-form-item>
 
           <el-form-item label=" " prop="nameEn">
-            <span> اسم الطبيب باللغة الانجليزية </span>
+            <span> اسم الطبيب الجديد باللغة الانجليزية </span>
             <el-input
-              v-model="teamEditForm.nameEn"
+              v-model="editTeamForm.nameEn"
               placeholder="اكتب اسم الطبيب باللغة الانجليزية"
             ></el-input>
           </el-form-item>
@@ -56,7 +35,7 @@
           <el-input
             type="textarea"
             :rows="2"
-            v-model="teamEditForm.descriptionAr"
+            v-model="editTeamForm.descriptionAr"
           ></el-input>
         </el-form-item>
 
@@ -66,7 +45,7 @@
             dir="ltr"
             type="textarea"
             :rows="2"
-            v-model="teamEditForm.descriptionEn"
+            v-model="editTeamForm.descriptionEn"
           ></el-input>
         </el-form-item>
 
@@ -87,12 +66,13 @@
             src="@/assets/imgs/edit-icon.png"
             alt="edit icon"
             class="m-2"
+            @click="toggleEditModal"
             role="button"
           />
           <img
             src="@/assets/imgs/delete-icon.png"
             alt="delete icon"
-            @click="deleteCity(doctor)"
+            @click="deleteDoctor(doctor)"
             role="button"
           />
         </div>
@@ -124,33 +104,31 @@ export default {
       doctor: {},
       selectedImage: null,
       selectedImageUrl: null,
-      teamEditForm: {
-        image: null,
-      },
-      teamEditFormRules: {
+      editTeamForm: {},
+      editTeamFormRules: {
         nameAr: [{ required: true, message: "Arabic name Is Required" }],
         nameEn: [{ required: true, message: "English name Is Required" }],
-        descriptoinAr: [
+        descrioptionAr: [
           { required: true, message: "Arabic descriptoin Is Required" },
         ],
-        descriptoinEn: [
+        descrioptionEn: [
           { required: true, message: "English descriptoin Is Required" },
         ],
       },
     };
   },
   async fetch() {
-    this.getDoctor();
+    await this.getDoctor();
   },
   methods: {
-    toggleModal() {
+    toggleEditModal() {
       this.editModalTrigger = !this.editModalTrigger;
     },
     async getDoctor() {
       const doctor = await this.$axios.get(`/team/${this.$route.params.id}`);
       this.doctor = await doctor.data;
     },
-    deleteCity(doctor) {
+    deleteDoctor(doctor) {
       this.$confirm(
         `Are you sure you want to delete ${doctor.nameAr}`,
         "Warning",
@@ -174,6 +152,32 @@ export default {
             message: "Delete canceled",
           });
         });
+    },
+    editDoctor() {
+      this.$refs.editTeamForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            await this.$axios.patch(
+              `/team/${this.$route.params.id}`,
+              this.editTeamForm
+            );
+            // Reset
+            this.editTeamForm = {};
+            await this.toggleEditModal();
+            await this.getDoctor();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
   },
 };

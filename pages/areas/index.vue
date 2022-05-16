@@ -200,7 +200,7 @@ export default {
             // Reset
             this.regionForm = {};
             this.toggleModal();
-            this.getAllRegions();
+            await this.getAllRegions();
           } catch (error) {
             console.log(error);
           } finally {
@@ -225,7 +225,7 @@ export default {
             message: "Delete completed",
           });
           await this.$axios.delete(`region/${region.id}`);
-          this.getAllRegions();
+          await this.getAllRegions();
         })
         .catch(() => {
           this.$message({
@@ -251,7 +251,7 @@ export default {
             // Reset
             this.editRegionForm = {};
             this.toggleEditModal();
-            this.getAllRegions();
+            await this.getAllRegions();
           } catch (error) {
             console.log(error);
           } finally {
