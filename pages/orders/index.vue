@@ -10,7 +10,8 @@
         <el-input
           class="search__input"
           placeholder="ابحث برقم الهاتف"
-          v-model="input"
+          v-model="searchInput"
+          type="tel"
         ></el-input>
       </div>
       <div>
@@ -36,6 +37,7 @@
     </div>
 
     <UIEmpty
+      v-if="!allOrders"
       imgSrc="orders/no-orders.png"
       alt="no orders"
       caption="لا توجد حجوزات حتى الان"
@@ -97,29 +99,48 @@
       <button class="secondary-btn w-50 mb-2 me-4">تأكيد</button>
     </UIPopupForm>
 
-    <!-- <div class="cards">
-      <div class="card-item card-item--orders">
+    <div class="cards mt-3">
+      <div
+        class="card-item card-item--orders my-2"
+        v-for="order in filteredOrders"
+        :key="order.id"
+      >
         <div class="d-flex gap-4">
-          <div class="date">
-            <div class="my-2">5 مايو 2021</div>
-            <div>06:55 PM</div>
+          <div class="date text-center">
+            <div class="my-2">{{ dateFormat(order.day) }}</div>
+            <div dir="ltr">{{ order.from }}</div>
           </div>
           <div>
             <div class="my-2 d-flex align-items-center gap-2">
               <h6 class="key">اسم العميل</h6>
-              <h6 class="value">محمد أحمد محمود</h6>
+              <h6 class="value">{{ order.username }}</h6>
             </div>
             <div class="d-flex align-items-center gap-2">
               <h6 class="key">رقم الهاتف</h6>
-              <h6 class="value">01017067685</h6>
+              <h6 class="value">{{ order.phone }}</h6>
             </div>
           </div>
         </div>
         <div class="order-btn">
-          <button type="button" class="secondary-btn">التفاصيل</button>
+          <nuxt-link
+            :to="`/orders/${order.id}`"
+            class="secondary-btn text-decoration-none"
+            >التفاصيل</nuxt-link
+          >
         </div>
       </div>
-    </div> -->
+    </div>
+
+    <!-- Pagination -->
+    <el-pagination
+      class="position-fixed bottom-0"
+      background
+      layout="prev, pager, next"
+      :current-page.sync="page"
+      @current-change="getAllOrders"
+      :total="totalPages * 10"
+    >
+    </el-pagination>
   </section>
 </template>
 
@@ -128,10 +149,19 @@ export default {
   data() {
     return {
       input: "",
+      searchInput: "",
       modalTrigger: false,
       showCalender: false,
       showFilter: false,
+      allOrders: [],
+      page: 1,
+      totalPages: 1,
+      date: "",
     };
+  },
+  async fetch() {
+    await this.getAllOrders();
+    console.log(this.allOrders);
   },
   methods: {
     toggleModal() {
@@ -144,6 +174,25 @@ export default {
     openFilter() {
       this.showCalender = false;
       this.showFilter = true;
+    },
+    async getAllOrders() {
+      let params = { page: this.page };
+      const ordersRes = await this.$axios.get("/orders", { params });
+      console.log(ordersRes);
+      this.allOrders = await ordersRes.data.docs;
+      this.totalPages = await ordersRes.data.totalPages;
+      this.page = await ordersRes.data.page;
+    },
+    dateFormat(date) {
+      const df = new Date(date);
+      return df.getFullYear() + "-" + df.getMonth() + "-" + df.getDate();
+    },
+  },
+  computed: {
+    filteredOrders() {
+      return this.allOrders.filter((order) =>
+        order.phone.includes(this.searchInput)
+      );
     },
   },
 };

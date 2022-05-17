@@ -179,9 +179,9 @@
       class="position-fixed bottom-0"
       background
       layout="prev, pager, next"
-      v-model="page"
+      :current-page.sync="page"
       @current-change="getAllBranches"
-      :total="page * 10"
+      :total="totalPages * 10"
     >
     </el-pagination>
   </section>
@@ -238,7 +238,7 @@ export default {
     },
     async getAllBranches() {
       let params = { page: this.page };
-      const branchesRes = await this.$axios.get("/branches", params);
+      const branchesRes = await this.$axios.get("/branches", { params });
       this.allBranches = await branchesRes.data.docs;
       this.totalPages = await branchesRes.data.totalPages;
       this.page = await branchesRes.data.page;

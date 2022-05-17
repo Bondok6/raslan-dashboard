@@ -2,6 +2,7 @@
   <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة طبيب" />
 
+    <!-- Search -->
     <div class="search w-50">
       <img
         src="@/assets/imgs/orders/search.png"
@@ -154,6 +155,7 @@
       </el-form>
     </UIPopupForm>
 
+    <!-- No Doctors -->
     <UIEmpty
       v-if="!team"
       imgSrc="doctors/no-doctors.png"
@@ -161,6 +163,7 @@
       caption="قم بإضافة الفريق الطبي الخاص بالمعمل "
     />
 
+    <!-- Doctors -->
     <div class="cards">
       <div
         class="card-item card-item--ads my-2"
@@ -194,13 +197,14 @@
       </div>
     </div>
 
+    <!-- Pagination -->
     <el-pagination
       class="position-fixed bottom-0"
       background
       layout="prev, pager, next"
-      v-model="page"
+      :current-page.sync="page"
       @current-change="getTeam"
-      :total="page * 10"
+      :total="totalPages * 10"
     >
     </el-pagination>
   </section>
@@ -299,9 +303,8 @@ export default {
     },
     async getTeam() {
       let params = { page: this.page };
-      const teamRes = await this.$axios.get("/teams");
+      const teamRes = await this.$axios.get("/teams", { params });
       this.team = await teamRes.data.docs;
-      console.log(this.team);
       this.totalPages = await teamRes.data.totalPages;
       this.page = await teamRes.data.page;
     },

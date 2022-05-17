@@ -112,9 +112,9 @@
       class="position-fixed bottom-0"
       background
       layout="prev, pager, next"
-      v-model="page"
+      :current-page.sync="page"
       @current-change="getAllCities"
-      :total="page * 10"
+      :total="totalPages * 10"
     >
     </el-pagination>
   </section>
