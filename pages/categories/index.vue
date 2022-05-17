@@ -2,6 +2,7 @@
   <section class="ads-page">
     <UIAddButton @click="toggleModal" buttonText="اضافة فئة" />
 
+    <!-- Search -->
     <div class="search w-50">
       <img
         src="@/assets/imgs/orders/search.png"
@@ -11,6 +12,7 @@
       <el-input v-model="searchInput" placeholder="ابحث في الفئات"></el-input>
     </div>
 
+    <!-- Add Category -->
     <UIPopupForm
       v-if="modalTrigger"
       :modalTrigger="modalTrigger"
@@ -70,35 +72,82 @@
       </el-form>
     </UIPopupForm>
 
+    <!-- Update Category -->
+    <UIPopupForm
+      v-if="editModalTrigger"
+      :modalTrigger="editModalTrigger"
+      @update:modalTrigger="toggleEditModal"
+    >
+      <el-form
+        class="p-5 d-flex flex-column gap-2"
+        :rules="editCategoryRules"
+        :model="editCategoryForm"
+        ref="editCategoryForm"
+      >
+        <el-form-item label=" " prop="titleAr">
+          <span>اسم الفئة الجديد باللغة العربية</span>
+          <el-input
+            v-model="editCategoryForm.titleAr"
+            placeholder="اكتب اسم الفئة باللغة العربية"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="titleEn">
+          <span>اسم الفئة باللغة الانجليزية</span>
+          <el-input
+            v-model="editCategoryForm.titleEn"
+            placeholder="اكتب اسم الفئة باللغة الانجليزية"
+          ></el-input>
+        </el-form-item>
+
+        <button
+          type="submit"
+          class="secondary-btn"
+          @click.prevent="editCategory"
+        >
+          حفظ التغييرات
+        </button>
+      </el-form>
+    </UIPopupForm>
+
+    <!-- No Categories -->
     <UIEmpty
-      v-if="categories.length < 1"
+      v-if="!categories"
       imgSrc="categories/no-categories.png"
       alt="no categories"
       caption="قم بإضافة الفئات المختلفة "
     />
 
-    <div class="mt-3">
-      <div class="d-flex flex-wrap">
-        <div
-          class="d-flex justify-content-between align-items-center bg-white p-2 m-2 rounded w-25"
-          v-for="category in filteredCategories"
-          :key="category.id"
-        >
-          <div class="d-flex align-items-center gap-3">
-            <img :src="category.image" alt="category icon" width="70" />
-            <h6>{{ category.titleAr }}</h6>
-          </div>
-          <div class="options">
-            <img
-              src="@/assets/imgs/delete-icon.png"
-              alt="delete icon"
-              @click="deleteCategory(category)"
-            />
-          </div>
+    <!-- Categories -->
+    <div class="d-flex flex-wrap mt-3">
+      <div
+        class="d-flex justify-content-around align-items-center bg-white p-2 m-2 rounded"
+        style="width: 300px"
+        v-for="category in filteredCategories"
+        :key="category.id"
+      >
+        <div class="d-flex align-items-center gap-3">
+          <img :src="category.image" alt="category icon" width="70" />
+          <h6>{{ category.titleAr }}</h6>
+        </div>
+        <div class="options">
+          <img
+            src="@/assets/imgs/edit-icon.png"
+            alt="edit icon"
+            @click="toggleEditModal(category.id)"
+            role="button"
+          />
+          <img
+            src="@/assets/imgs/delete-icon.png"
+            alt="delete icon"
+            @click="deleteCategory(category)"
+            role="button"
+          />
         </div>
       </div>
     </div>
 
+    <!-- Pagination -->
     <el-pagination
       class="position-fixed bottom-0"
       background
@@ -116,6 +165,7 @@ export default {
   data() {
     return {
       modalTrigger: false,
+      editModalTrigger: false,
       searchInput: "",
       selectedImage: null,
       selectedImageUrl: null,
@@ -123,6 +173,11 @@ export default {
         image: null,
       },
       categoriesFormRules: {
+        titleAr: [{ required: true, message: "Arabic title Is Required" }],
+        titleEn: [{ required: true, message: "English title Is Required" }],
+      },
+      editCategoryForm: {},
+      editCategoryRules: {
         titleAr: [{ required: true, message: "Arabic title Is Required" }],
         titleEn: [{ required: true, message: "English title Is Required" }],
       },
@@ -137,6 +192,10 @@ export default {
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    toggleEditModal(doctorId) {
+      this.editModalTrigger = !this.editModalTrigger;
+      this.targetId = doctorId;
     },
     onImageSeclected(e) {
       if (e.target.files.length > 0) {
@@ -208,6 +267,32 @@ export default {
             message: "Delete canceled",
           });
         });
+    },
+    editCategory() {
+      this.$refs.editCategoryForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            await this.$axios.patch(
+              `/category/${this.targetId}`,
+              this.editCategoryForm
+            );
+            // Reset
+            this.editCategoryForm = {};
+            await this.toggleEditModal();
+            await this.getCategories();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
   },
   computed: {

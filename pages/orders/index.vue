@@ -1,5 +1,6 @@
 <template>
   <section class="orders-page">
+    <!-- Filters -->
     <div class="d-flex justify-content-end align-items-center gap-3">
       <div class="search">
         <img
@@ -35,13 +36,6 @@
         </span>
       </div>
     </div>
-
-    <UIEmpty
-      v-if="!allOrders"
-      imgSrc="orders/no-orders.png"
-      alt="no orders"
-      caption="لا توجد حجوزات حتى الان"
-    />
 
     <UIPopupForm
       v-if="modalTrigger"
@@ -99,6 +93,7 @@
       <button class="secondary-btn w-50 mb-2 me-4">تأكيد</button>
     </UIPopupForm>
 
+    <!-- Orders -->
     <div class="cards mt-3">
       <div
         class="card-item card-item--orders my-2"
@@ -130,6 +125,14 @@
         </div>
       </div>
     </div>
+
+    <!-- No Orders -->
+    <UIEmpty
+      v-if="!allOrders"
+      imgSrc="orders/no-orders.png"
+      alt="no orders"
+      caption="لا توجد حجوزات حتى الان"
+    />
 
     <!-- Pagination -->
     <el-pagination
