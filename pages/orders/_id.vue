@@ -4,7 +4,7 @@
       <div class="date d-flex">
         <div class="align-self-center text-center">تفاصيل الحجز</div>
       </div>
-      <div class="d-flex flex-wrap justify-content-around w-100">
+      <div class="d-flex flex-wrap mx-5 gap-5 w-100">
         <div>
           <div class="my-2 d-flex align-items-center gap-2">
             <h6 class="key">رقم الحجز</h6>
@@ -34,7 +34,7 @@
       <div class="date d-flex">
         <div class="align-self-center text-center">بيانات المعمل</div>
       </div>
-      <div class="d-flex flex-wrap justify-content-around w-100">
+      <div class="d-flex flex-wrap mx-5 gap-5 w-100">
         <div>
           <div class="my-2 d-flex align-items-center gap-2">
             <h6 class="key">اسم العميل</h6>
@@ -102,7 +102,7 @@
       <div class="date d-flex">
         <div class="align-self-center text-center">تفاصيل الخدمة</div>
       </div>
-      <div class="d-flex flex-wrap justify-content-around w-100">
+      <div class="d-flex flex-wrap mx-5 gap-5 w-100">
         <div>
           <div class="my-2 d-flex align-items-center gap-2">
             <h6 class="key">نوع الخدمة</h6>

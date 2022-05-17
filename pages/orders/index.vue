@@ -16,35 +16,45 @@
         ></el-input>
       </div>
       <div>
-        <span
-          class="calender"
-          @click="
-            toggleModal();
-            openCalender();
-          "
-        >
+        <span class="calender" @click="toggleCalender">
           <img src="@/assets/imgs/orders/calender.png" alt="calender icon" />
         </span>
-        <span
-          class="option"
-          @click="
-            toggleModal();
-            openFilter();
-          "
-        >
+        <span class="option">
           <img src="@/assets/imgs/orders/options.png" alt="options icon" />
         </span>
       </div>
     </div>
 
+    <!-- Date Filter -->
     <UIPopupForm
+      v-if="showCalender"
+      :modalTrigger="showCalender"
+      @update:modalTrigger="toggleCalender"
+    >
+      <el-form
+        :rules="calenderFormRules"
+        :model="calenderForm"
+        ref="calenderForm"
+      >
+        <el-form-item label=" " prop="dateInput">
+          <el-calendar v-model="calenderForm.dateInput" class="calender">
+          </el-calendar>
+          <button
+            type="submit"
+            class="secondary-btn w-50 mb-2 me-4"
+            @click.prevent="dateFilter"
+          >
+            تأكيد
+          </button>
+        </el-form-item>
+      </el-form>
+    </UIPopupForm>
+
+    <!-- <UIPopupForm
       v-if="modalTrigger"
       :modalTrigger="modalTrigger"
       @update:modalTrigger="toggleModal"
     >
-      <el-calendar v-if="showCalender" v-model="dateInput" class="calender">
-      </el-calendar>
-
       <el-form v-if="showFilter" class="p-5">
         <el-form-item>
           <label class="d-block">اختر الحالة</label>
@@ -91,7 +101,7 @@
       </el-form>
 
       <button class="secondary-btn w-50 mb-2 me-4">تأكيد</button>
-    </UIPopupForm>
+    </UIPopupForm> -->
 
     <!-- Orders -->
     <div class="cards mt-3">
@@ -136,7 +146,8 @@
 
     <!-- Pagination -->
     <el-pagination
-      class="position-fixed bottom-0"
+      v-if="totalPages > 1"
+      class="position-relative bottom-0 my-4"
       background
       layout="prev, pager, next"
       :current-page.sync="page"
@@ -153,6 +164,10 @@ export default {
     return {
       input: "",
       searchInput: "",
+      calenderForm: {},
+      calenderFormRules: {
+        dateInput: [{ required: true, message: "You Should Select Date" }],
+      },
       modalTrigger: false,
       showCalender: false,
       showFilter: false,
@@ -170,18 +185,16 @@ export default {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
     },
-    openCalender() {
-      this.showFilter = false;
-      this.showCalender = true;
+    toggleCalender() {
+      this.showCalender = !this.showCalender;
     },
-    openFilter() {
-      this.showCalender = false;
-      this.showFilter = true;
-    },
+    // openFilter() {
+    //   this.showCalender = false;
+    //   this.showFilter = true;
+    // },
     async getAllOrders() {
       let params = { page: this.page };
       const ordersRes = await this.$axios.get("/orders", { params });
-      console.log(ordersRes);
       this.allOrders = await ordersRes.data.docs;
       this.totalPages = await ordersRes.data.totalPages;
       this.page = await ordersRes.data.page;
@@ -189,6 +202,35 @@ export default {
     dateFormat(date) {
       const df = new Date(date);
       return df.getFullYear() + "-" + df.getMonth() + "-" + df.getDate();
+    },
+    dateFilter() {
+      this.$refs.calenderForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            let params = { page: this.page };
+            const filterRes = await this.$axios.get(
+              `orders?day=${this.calenderForm.dateInput.toISOString()}`,
+              { params }
+            );
+            this.allOrders = await filterRes.data.docs;
+            this.totalPages = await filterRes.data.totalPages;
+            this.page = await filterRes.data.page;
+            // Reset
+            this.calenderForm = {};
+            this.toggleCalender();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
   },
   computed: {

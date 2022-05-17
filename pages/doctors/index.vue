@@ -349,7 +349,7 @@ export default {
             );
             // Reset
             this.editTeamForm = {};
-            await this.toggleEditModal();
+            this.toggleEditModal();
             await this.getTeam();
           } catch (error) {
             console.log(error);
