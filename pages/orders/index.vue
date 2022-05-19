@@ -138,10 +138,10 @@
 
     <!-- No Orders -->
     <UIEmpty
-      v-if="!allOrders"
+      v-if="filteredOrders.length < 1"
       imgSrc="orders/no-orders.png"
       alt="no orders"
-      caption="لا توجد حجوزات حتى الان"
+      caption="لا توجد حجوزات"
     />
 
     <!-- Pagination -->
@@ -179,7 +179,6 @@ export default {
   },
   async fetch() {
     await this.getAllOrders();
-    console.log(this.allOrders);
   },
   methods: {
     toggleModal() {
@@ -225,7 +224,6 @@ export default {
             this.calenderForm = {};
             this.toggleCalender();
           } catch (error) {
-            console.log(error);
           } finally {
             loading.close();
           }

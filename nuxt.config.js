@@ -14,6 +14,11 @@ export default {
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
   },
 
+  loading: {
+    color: "orange",
+    height: "5px",
+  },
+
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     "~/node_modules/bootstrap/dist/css/bootstrap.min.css",
