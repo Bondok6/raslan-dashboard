@@ -11,7 +11,7 @@
       />
       <el-input
         placeholder="ابحث في تعليمات سحب العينة"
-        v-model="input"
+        v-model="searchInput"
       ></el-input>
     </div>
 
@@ -78,7 +78,7 @@
     />
 
     <!-- Instructions -->
-    <div class="cards">
+    <div class="cards" v-show="!modalTrigger">
       <div
         class="card-item d-flex align-items-center justify-content-between gap-4 my-2"
         v-for="instruction in allInstructions"
@@ -102,6 +102,7 @@
             src="@/assets/imgs/delete-icon.png"
             alt="delete icon"
             role="button"
+            @click="deleteInstruction(instruction)"
           />
         </div>
       </div>
@@ -126,17 +127,7 @@ export default {
   data() {
     return {
       modalTrigger: false,
-      editorConfig: {
-        simpleUpload: {
-          uploadUrl: "path_to_image_controller",
-          headers: {
-            Authorization: "optional_token",
-          },
-        },
-      },
-      contentHolderAr: "",
-      contentHolderEn: "",
-      input: "",
+      searchInput: "",
       page: 1,
       totalPages: 1,
       allInstructions: [],
@@ -155,6 +146,31 @@ export default {
       this.allInstructions = await instructionRes.data.docs;
       this.totalPages = await instructionRes.data.totalPages;
       this.page = await instructionRes.data.page;
+    },
+    deleteInstruction(instruction) {
+      this.$confirm(
+        `Are you sure you want to delete ${instruction.titleAr}`,
+        "Warning",
+        {
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(async () => {
+          this.$message({
+            type: "success",
+            message: "Delete completed",
+          });
+          await this.$axios.delete(`instruction/${instruction.id}`);
+          this.getAllInstructions();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Delete canceled",
+          });
+        });
     },
   },
 };
