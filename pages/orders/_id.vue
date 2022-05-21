@@ -136,16 +136,17 @@
         </div>
       </div>
 
-      <div class="card-item card-item--orders w-100 my-2">
+      <div
+        class="card-item card-item--orders w-100 my-2"
+        v-if="order.products.length > 0"
+      >
         <div class="date d-flex">
           <div class="align-self-center text-center">تفاصيل الخدمة</div>
         </div>
         <div class="d-flex flex-wrap mx-5 gap-5 w-100">
-          <div>
-            <div class="my-2 d-flex align-items-center gap-2">
-              <h6 class="key">الفحص</h6>
-              <h6 class="value">{{ order.products[0].titleAr }}</h6>
-            </div>
+          <div class="my-2 d-flex align-items-center gap-2">
+            <h6 class="key">الفحص</h6>
+            <h6 class="value">{{ order.products[0].titleAr }}</h6>
           </div>
         </div>
       </div>
