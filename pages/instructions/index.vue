@@ -163,7 +163,7 @@
     <div class="cards" v-show="!modalTrigger" v-if="!editModalTrigger">
       <div
         class="card-item d-flex align-items-center justify-content-between gap-4 my-2"
-        v-for="instruction in allInstructions"
+        v-for="instruction in filteredInstructions"
         :key="instruction.id"
       >
         <h6 class="key text-center w-10">{{ instruction.titleAr }}</h6>
@@ -307,6 +307,15 @@ export default {
             message: "Delete canceled",
           });
         });
+    },
+  },
+  computed: {
+    filteredInstructions() {
+      return this.allInstructions.filter((instruction) =>
+        instruction.titleAr
+          .toLowerCase()
+          .includes(this.searchInput.toLowerCase())
+      );
     },
   },
 };
