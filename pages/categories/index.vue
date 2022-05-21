@@ -284,7 +284,7 @@ export default {
             );
             // Reset
             this.editCategoryForm = {};
-            await this.toggleEditModal();
+            this.toggleEditModal();
             await this.getCategories();
           } catch (error) {
             console.log(error);
