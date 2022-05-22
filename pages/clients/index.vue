@@ -121,7 +121,7 @@
     <div class="cards">
       <div
         class="card-item d-flex justify-content-between"
-        v-for="client in allClients"
+        v-for="client in filteredclients"
         :key="client.id"
       >
         <div>
@@ -131,7 +131,7 @@
           </div>
           <div class="d-flex gap-3 align-items-center">
             <h6 class="key">رقم الهاتف</h6>
-            <h6 class="value">{{ client.phone }}</h6>
+            <h6 class="value" dir="ltr">{{ client.phone.substring(2) }}</h6>
           </div>
         </div>
         <div>
@@ -150,7 +150,7 @@
             />
           </div>
           <button
-            @click="$router.push('clients/5')"
+            @click="$router.push(`clients/${client.id}`)"
             type="button"
             class="btn secondary-btn mt-3"
           >
@@ -192,6 +192,7 @@ export default {
       totalPages: 1,
       page: 1,
       targetId: null,
+      searchInput: "",
     };
   },
   async fetch() {
@@ -286,6 +287,13 @@ export default {
           }
         }
       });
+    },
+  },
+  computed: {
+    filteredclients() {
+      return this.allClients.filter((client) =>
+        client.phone.includes(this.searchInput)
+      );
     },
   },
 };

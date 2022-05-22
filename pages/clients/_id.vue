@@ -1,9 +1,13 @@
 <template>
-  <section>
+  <section v-if="!$fetchState.pending">
     <UIAddButton @click="toggleModal" buttonText="اضافة تحليل" />
 
-    <div class="content">احمد محمد محمود / 01017067685</div>
+    <!-- Client Info -->
+    <h6 class="key">
+      {{ client.username }} / <span>{{ client.phone.substring(2) }}</span>
+    </h6>
 
+    <!-- Add Result -->
     <UIPopupForm
       v-if="modalTrigger"
       :modalTrigger="modalTrigger"
@@ -46,10 +50,18 @@
       </el-form>
     </UIPopupForm>
 
-    <div class="bg-white p-2 m-2 d-flex align-items-center">
+    <!-- No Result -->
+    <UIEmpty
+      imgSrc="analysis/no-analysis.png"
+      alt="no analysis"
+      caption="لا يوجد نتايج حتى الان لهذا العميل"
+    />
+
+    <!-- Results -->
+    <!-- <div class="bg-white p-2 m-2 d-flex align-items-center">
       <img src="@/assets/imgs/clients/calender.png" alt="calender" />
       <span class="fs-5 mx-2">5/2/2021</span>
-    </div>
+    </div> -->
   </section>
 </template>
 
@@ -63,11 +75,22 @@ export default {
         textareaAr: [{ required: true, message: "This Field Is Required" }],
         textareaEn: [{ required: true, message: "This Field Is Required" }],
       },
+      client: null,
     };
+  },
+  async fetch() {
+    await this.getClient();
   },
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    async getClient() {
+      const clientRed = await this.$axios.get(
+        `/fetch/${this.$route.params.id}/client`
+      );
+      this.client = await clientRed.data;
+      console.log(this.client);
     },
   },
 };
