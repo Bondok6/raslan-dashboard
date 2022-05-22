@@ -45,6 +45,28 @@
     }
   }
 
+  .card-item--ads {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &__img {
+      max-width: 200px;
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      .options {
+        align-self: flex-end;
+      }
+    }
+
+    &--large {
+      width: 100%;
+    }
+  }
+
   .card-item--branch {
     position: relative;
 
