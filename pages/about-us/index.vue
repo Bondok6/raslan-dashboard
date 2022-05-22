@@ -1,14 +1,16 @@
 <template>
-  <section>
-    <UIAddButton @click="toggleModal" buttonText="اضافة معلومات" />
+  <section v-if="!$fetchState.pending">
+    <UIAddButton @click="toggleModal" buttonText="اضافة او تعديل معلومة" />
 
+    <!-- No Info -->
     <UIEmpty
-      v-if="aboutData.length < 1 && !formToggle"
+      v-if="!info && !formToggle"
       imgSrc="about/no-info.png"
       alt="no info"
       caption="قم بإضافة معلومات تخص المعمل"
     />
 
+    <!-- Add or Update Info -->
     <div v-if="formToggle" class="add-info">
       <el-form
         class="p-5 d-flex flex-column gap-2"
@@ -20,7 +22,7 @@
           <div class="d-flex">
             <div class="w-50">
               <label for="formFile" class="form-label"
-                >أضف الايقون التي تعبر عن بالفئة</label
+                >أضف الايقون التي تعبر عن المعلومة</label
               >
               <input
                 class="form-control"
@@ -81,12 +83,8 @@
       </el-form>
     </div>
 
-    <div
-      class="cards"
-      v-for="info in aboutData"
-      :key="info.id"
-      v-show="!formToggle"
-    >
+    <!-- Info -->
+    <div class="cards mt-3" v-if="!formToggle">
       <div class="card-item card-item--ads card-item--ads--large">
         <div>
           <img
@@ -97,9 +95,13 @@
           />
         </div>
         <div class="w-100 d-flex flex-column">
-          <div class="options align-self-end">
-            <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
-            <img src="@/assets/imgs/delete-icon.png" alt="delete icon" />
+          <div class="align-self-end">
+            <img
+              src="@/assets/imgs/edit-icon.png"
+              alt="edit icon"
+              role="button"
+              @click="toggleModal"
+            />
           </div>
           <p class="px-4">
             {{ info.descriptionAr }}
@@ -117,9 +119,7 @@ export default {
       formToggle: false,
       selectedImage: null,
       selectedImageUrl: null,
-      aboutForm: {
-        image: null,
-      },
+      aboutForm: { image: null },
       aboutFormRules: {
         descriptionAr: [
           { required: true, message: "Arabic description Is Required" },
@@ -128,7 +128,7 @@ export default {
           { required: true, message: "English description Is Required" },
         ],
       },
-      aboutData: [],
+      info: null,
     };
   },
   async fetch() {
@@ -137,6 +137,7 @@ export default {
   methods: {
     toggleModal() {
       this.formToggle = !this.formToggle;
+      this.aboutForm = {};
     },
     onImageSeclected(e) {
       if (e.target.files.length > 0) {
@@ -178,8 +179,7 @@ export default {
     },
     async getInfo() {
       const infoRes = await this.$axios.get("/about");
-      const info = await infoRes.data;
-      this.aboutData.push(info);
+      this.info = await infoRes.data;
     },
   },
 };
