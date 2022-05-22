@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section v-if="!$fetchState.pending">
     <UIAddButton @click="toggleModal" buttonText="اضافة عميل" />
 
     <!-- Search -->
@@ -48,6 +48,7 @@
           <el-input
             v-model="clientsForm.password"
             placeholder="ادخل كلمة مرور مناسبة"
+            type="password"
           ></el-input>
         </el-form-item>
 
@@ -63,7 +64,7 @@
 
     <!-- No Clients -->
     <UIEmpty
-      v-if="!clients"
+      v-if="allClients.length < 1"
       imgSrc="clients/no-clients.png"
       alt="no clients"
       caption="قم بإضافة العلاء التابعين للمعمل "
@@ -72,8 +73,8 @@
     <!-- Clients -->
     <div class="cards">
       <div
-        class="card-item d-flex justify-content-around"
-        v-for="client in clients"
+        class="card-item d-flex justify-content-between"
+        v-for="client in allClients"
         :key="client.id"
       >
         <div>
@@ -87,9 +88,18 @@
           </div>
         </div>
         <div>
-          <div class="options d-flex">
-            <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
-            <img src="@/assets/imgs/delete-icon.png" alt="delete icon" />
+          <div class="d-flex gap-3">
+            <img
+              src="@/assets/imgs/edit-icon.png"
+              alt="edit icon"
+              role="button"
+            />
+            <img
+              src="@/assets/imgs/delete-icon.png"
+              alt="delete icon"
+              role="button"
+              @click="deleteClient(client)"
+            />
           </div>
           <button
             @click="$router.push('clients/5')"
@@ -101,6 +111,17 @@
         </div>
       </div>
     </div>
+
+    <!-- Pagination -->
+    <el-pagination
+      class="position-fixed bottom-0"
+      background
+      layout="prev, pager, next"
+      :current-page.sync="page"
+      @current-change="getAllClients"
+      :total="totalPages * 10"
+    >
+    </el-pagination>
   </section>
 </template>
 
@@ -116,18 +137,24 @@ export default {
         phone: [{ required: true, message: "Phone Is Required" }],
         password: [{ required: true, message: "Password Is Required" }],
       },
-      clients: [],
+      allClients: [],
+      totalPages: 1,
+      page: 1,
     };
   },
-  mounted() {
-    console.log(this.clients);
-  },
   async fetch() {
-    console.log(this.clients);
+    await this.getAllClients();
   },
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    async getAllClients() {
+      let params = { page: this.page };
+      const clientsRed = await this.$axios.get("/fetch/clients", { params });
+      this.allClients = await clientsRed.data.docs;
+      this.totalPages = await clientsRed.data.totalPages;
+      this.page = await clientsRed.data.page;
     },
     addClient() {
       this.$refs.clientsForm.validate(async (valid) => {
@@ -139,14 +166,11 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            const clientRes = await this.$axios.post(
-              "/add-client",
-              this.clientsForm
-            );
-            this.clients.push(clientRes.data);
-            Reset;
+            this.clientsForm.phone = "+2" + this.clientsForm.phone;
+            await this.$axios.post("/add-client", this.clientsForm);
             this.clientsForm = {};
             this.toggleModal();
+            this.getAllClients();
           } catch (error) {
             console.log(error);
           } finally {
@@ -154,6 +178,31 @@ export default {
           }
         }
       });
+    },
+    deleteClient(client) {
+      this.$confirm(
+        `Are you sure you want to delete ${client.username}`,
+        "Warning",
+        {
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(async () => {
+          this.$message({
+            type: "success",
+            message: "Delete completed",
+          });
+          await this.$axios.delete(`delete/${client.id}/client`);
+          await this.getAllClients();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Delete canceled",
+          });
+        });
     },
   },
 };

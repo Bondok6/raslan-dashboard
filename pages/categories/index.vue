@@ -259,7 +259,7 @@ export default {
             message: "Delete completed",
           });
           await this.$axios.delete(`category/${category.id}`);
-          this.getCategories();
+          await this.getCategories();
         })
         .catch(() => {
           this.$message({
