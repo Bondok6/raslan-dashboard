@@ -2,6 +2,7 @@
   <section class="page ads-page">
     <UIAddButton @click="toggleModal" buttonText="اضافة اعلان" />
 
+    <!-- Add Ads -->
     <UIPopupForm
       v-if="modalTrigger"
       :modalTrigger="modalTrigger"
@@ -80,6 +81,63 @@
       </el-form>
     </UIPopupForm>
 
+    <!-- Update Ads -->
+    <UIPopupForm
+      v-if="editModalTrigger"
+      :modalTrigger="editModalTrigger"
+      @update:modalTrigger="toggleEditModal"
+    >
+      <el-form
+        class="p-5 d-flex flex-column gap-2"
+        :model="editAdsForm"
+        ref="editAdsForm"
+      >
+        <el-form-item label=" " prop="titleAr">
+          <span>عنوان الاعلان الجديد باللغة العربية</span>
+          <el-input
+            v-model="editAdsForm.titleAr"
+            placeholder="اكتب عنوان الاعلان الجديد باللغة العربية"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="descriptionAr">
+          <span> نبذة مختصرة عن الاعلان الجديد باللغة العربية </span>
+          <el-input
+            type="textarea"
+            :rows="2"
+            v-model="editAdsForm.descriptionAr"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="titleEn">
+          <span>اسم الاعلان الجديد باللغة الانجليزية</span>
+          <el-input
+            v-model="editAdsForm.titleEn"
+            placeholder="اكتب عنوان الاعلان باللغة الانجليزية"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="descriptionEn">
+          <span> نبذة مختصرة عن الاعلان الجديد باللغةالانجليزية </span>
+          <el-input
+            dir="ltr"
+            type="textarea"
+            :rows="2"
+            v-model="editAdsForm.descriptionEn"
+          ></el-input>
+        </el-form-item>
+
+        <button
+          type="submit"
+          class="secondary-btn w-50 align-self-end"
+          @click.prevent="editAds"
+        >
+          حفظ التغييرات
+        </button>
+      </el-form>
+    </UIPopupForm>
+
+    <!-- No Ads -->
     <UIEmpty
       v-if="ads.length < 1"
       imgSrc="ads/no-ads.png"
@@ -87,36 +145,55 @@
       caption="لم يتم إضافة اى إعلانات بعد"
     />
 
-    <!-- <div class="cards" >
-      <div class="card-item card-item--ads">
-        <div>
+    <!-- Ads -->
+    <div class="cards">
+      <div
+        class="card-item d-flex justify-content-between my-2"
+        v-for="ad in ads"
+        :key="ad.id"
+      >
+        <div class="d-flex align-items-center">
           <img
-            src="@/assets/imgs/random.png"
+            :src="ad.image"
             alt="ad image"
             class="card-item--ads__img"
+            width="150"
+          />
+
+          <div class="p-2">
+            <h6>{{ ad.titleAr }}</h6>
+            <p>
+              {{ ad.descriptionAr }}
+            </p>
+          </div>
+        </div>
+
+        <div class="d-flex gap-3 align-self-start">
+          <img
+            src="@/assets/imgs/edit-icon.png"
+            alt="edit icon"
+            role="button"
+            @click="toggleEditModal(ad.id)"
+          />
+          <img
+            src="@/assets/imgs/delete-icon.png"
+            alt="delete icon"
+            role="button"
+            @click="deleteAds(ad)"
           />
         </div>
-        <div class="card-item--ads__content">
-          <div class="options">
-            <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
-            <img src="@/assets/imgs/delete-icon.png" alt="delete icon" />
-          </div>
-          <p>
-            هناك حقيقة مثبتة منذ زمن طويل وهي أن المحتوى المقروء لصفحة ما سيلهي
-            القارئ عن التركيز على الشكل الخارجي للنص أو شكل توضع الفقرات في
-            الصفحة التي يقرأها.
-          </p>
-        </div>
       </div>
-    </div> -->
+    </div>
 
+    <!-- Pagination -->
     <el-pagination
+      v-if="totalPages > 1"
       class="position-fixed bottom-0"
       background
       layout="prev, pager, next"
-      v-model="page"
-      @current-change="getCategories"
-      :total="page * 10"
+      :current-page.sync="page"
+      @current-change="getAds"
+      :total="totalPages * 10"
     >
     </el-pagination>
   </section>
@@ -127,6 +204,7 @@ export default {
   data() {
     return {
       modalTrigger: false,
+      editModalTrigger: false,
       selectedImage: null,
       selectedImageUrl: null,
       adsForm: {
@@ -142,9 +220,11 @@ export default {
           { required: true, message: "English description Is Required" },
         ],
       },
+      editAdsForm: {},
       ads: [],
       page: 1,
       totalPages: 1,
+      targetId: null,
     };
   },
   async fetch() {
@@ -153,6 +233,10 @@ export default {
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    toggleEditModal(id) {
+      this.editModalTrigger = !this.editModalTrigger;
+      this.targetId = id;
     },
     onImageSeclected(e) {
       if (e.target.files.length > 0) {
@@ -177,7 +261,7 @@ export default {
             fd.append("titleAr", this.adsForm.titleAr);
             fd.append("descriptionAr", this.adsForm.titleAr);
             fd.append("titleEn", this.adsForm.titleEn);
-            fd.append("descriptionAr", this.adsForm.descriptionEn);
+            fd.append("descriptionEn", this.adsForm.descriptionEn);
             fd.append("image", this.adsForm.image);
             await this.$axios.post("/ads", fd);
             // Reset
@@ -185,7 +269,7 @@ export default {
             this.selectedImage = null;
             this.selectedImageUrl = null;
             this.toggleModal();
-            // this.getAds();
+            await this.getAds();
           } catch (error) {
             console.log(error);
           } finally {
@@ -196,11 +280,42 @@ export default {
     },
     async getAds() {
       let params = { page: this.page };
-      const adsRes = await this.$axios.get("/ads?branches=10", { params });
+      const adsRes = await this.$axios.get("/ads", { params });
       this.ads = await adsRes.data.docs;
       this.totalPages = await adsRes.data.totalPages;
       this.page = await adsRes.data.page;
-      console.log(this.ads);
+    },
+    deleteAds(ads) {
+      this.$confirm(
+        `Are you sure you want to delete ${ads.titleAr}`,
+        "Warning",
+        {
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(async () => {
+          this.$message({
+            type: "success",
+            message: "Delete completed",
+          });
+          await this.$axios.delete(`ads/${ads.id}`);
+          await this.getAds();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Delete canceled",
+          });
+        });
+    },
+    async editAds() {
+      await this.$axios.patch(`/ads/${this.targetId}`, this.editAdsForm);
+      // Reset
+      this.editAdsForm = {};
+      this.toggleEditModal();
+      await this.getAds();
     },
   },
 };
