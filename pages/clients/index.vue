@@ -62,6 +62,53 @@
       </el-form>
     </UIPopupForm>
 
+    <!-- Update Client -->
+    <UIPopupForm
+      v-if="editModalTrigger"
+      :modalTrigger="editModalTrigger"
+      @update:modalTrigger="toggleEditModal"
+    >
+      <el-form
+        class="p-5 d-flex flex-column"
+        :rules="editClientFormRules"
+        :model="editClientForm"
+        ref="editClientForm"
+      >
+        <el-form-item label=" " prop="username">
+          <span> اسم العميل باللغة العربية </span>
+          <el-input
+            v-model="editClientForm.username"
+            placeholder="اكتب اسم العميل باللغة العربية"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="phone">
+          <span>رقم الهاتف</span>
+          <el-input
+            v-model="editClientForm.phone"
+            placeholder="اكتب رقم الهاتف الخاص بالعميل"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="password">
+          <span>كلمة المرور</span>
+          <el-input
+            v-model="editClientForm.password"
+            placeholder="ادخل كلمة مرور مناسبة"
+            type="password"
+          ></el-input>
+        </el-form-item>
+
+        <button
+          type="submit"
+          class="secondary-btn w-50 align-self-end"
+          @click.prevent="editClient"
+        >
+          حفظ التغييرات
+        </button>
+      </el-form>
+    </UIPopupForm>
+
     <!-- No Clients -->
     <UIEmpty
       v-if="allClients.length < 1"
@@ -93,6 +140,7 @@
               src="@/assets/imgs/edit-icon.png"
               alt="edit icon"
               role="button"
+              @click="toggleEditModal(client.id)"
             />
             <img
               src="@/assets/imgs/delete-icon.png"
@@ -130,6 +178,7 @@ export default {
   data() {
     return {
       modalTrigger: false,
+      editModalTrigger: false,
       searchInput: "",
       clientsForm: {},
       clientsFormRules: {
@@ -137,9 +186,12 @@ export default {
         phone: [{ required: true, message: "Phone Is Required" }],
         password: [{ required: true, message: "Password Is Required" }],
       },
+      editClientForm: {},
+      editClientFormRules: {},
       allClients: [],
       totalPages: 1,
       page: 1,
+      targetId: null,
     };
   },
   async fetch() {
@@ -148,6 +200,10 @@ export default {
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    toggleEditModal(clientId) {
+      this.editModalTrigger = !this.editModalTrigger;
+      this.targetId = clientId;
     },
     async getAllClients() {
       let params = { page: this.page };
@@ -203,6 +259,33 @@ export default {
             message: "Delete canceled",
           });
         });
+    },
+    editClient() {
+      this.$refs.editClientForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            this.editClientForm.phone = "+2" + this.editClientForm.phone;
+            await this.$axios.put(
+              `/update/${this.targetId}/client`,
+              this.editClientForm
+            );
+            // Reset
+            this.editClientForm = {};
+            this.toggleEditModal();
+            await this.getAllClients();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
   },
 };
