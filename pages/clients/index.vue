@@ -120,7 +120,7 @@
     <!-- Clients -->
     <div class="cards">
       <div
-        class="card-item d-flex justify-content-between"
+        class="card-item d-flex justify-content-between my-2"
         v-for="client in filteredclients"
         :key="client.id"
       >
@@ -134,8 +134,8 @@
             <h6 class="value" dir="ltr">{{ client.phone.substring(2) }}</h6>
           </div>
         </div>
-        <div>
-          <div class="d-flex gap-3">
+        <div class="d-flex flex-column">
+          <div class="d-flex justify-content-around">
             <img
               src="@/assets/imgs/edit-icon.png"
               alt="edit icon"
@@ -154,7 +154,7 @@
             type="button"
             class="btn secondary-btn mt-3"
           >
-            تحاليل
+            عرض نتايج التحاليل
           </button>
         </div>
       </div>
