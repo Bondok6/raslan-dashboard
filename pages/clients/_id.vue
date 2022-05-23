@@ -65,14 +65,40 @@
     />
 
     <!-- Results -->
-    <div class="d-flex flex-column">
+    <div
+      class="cards d-flex flex-column"
+      v-for="result in results"
+      :key="result._id"
+    >
       <div class="bg-white p-2 m-2 d-flex align-items-center">
         <img src="@/assets/imgs/clients/calender.png" alt="calender" />
-        <span class="fs-5 mx-2">{{ results[0]._id }}</span>
+        <span class="fs-5 mx-2">{{ result._id }}</span>
       </div>
-      <div class="d-flex flex-column">
-        <h6>{{ results[0].docs[0].titleAr }}</h6>
-        <a :href="results[0].docs[0].attachment"> PDF </a>
+      <div class="d-flex flex-wrap justify-content-between">
+        <div
+          class="p-3 card-item d-flex align-items-center justify-content-between bg-white my-2"
+          v-for="data in result.docs"
+          :key="data.id"
+        >
+          <div class="d-flex flex-column">
+            <h6 class="mb-3">{{ data.titleAr }}</h6>
+            <a :href="data.attachment">
+              <img src="@/assets/imgs/clients/pdf.png" alt="pdf incon" />
+            </a>
+          </div>
+          <div class="align-self-start d-flex gap-3">
+            <img
+              src="@/assets/imgs/edit-icon.png"
+              alt="edit icon"
+              role="button"
+            />
+            <img
+              src="@/assets/imgs/delete-icon.png"
+              alt="delete icon"
+              role="button"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -119,6 +145,7 @@ export default {
         `/results?client=${this.$route.params.id}`
       );
       this.results = await resultRes.data;
+      console.log(this.results);
     },
     addResult() {
       this.$refs.resultForm.validate(async (valid) => {
