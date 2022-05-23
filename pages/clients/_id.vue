@@ -58,16 +58,23 @@
 
     <!-- No Result -->
     <UIEmpty
+      v-if="results.length < 1"
       imgSrc="analysis/no-analysis.png"
       alt="no analysis"
       caption="لا يوجد نتايج حتى الان لهذا العميل"
     />
 
     <!-- Results -->
-    <!-- <div class="bg-white p-2 m-2 d-flex align-items-center">
-      <img src="@/assets/imgs/clients/calender.png" alt="calender" />
-      <span class="fs-5 mx-2">5/2/2021</span>
-    </div> -->
+    <div class="d-flex flex-column">
+      <div class="bg-white p-2 m-2 d-flex align-items-center">
+        <img src="@/assets/imgs/clients/calender.png" alt="calender" />
+        <span class="fs-5 mx-2">{{ results[0]._id }}</span>
+      </div>
+      <div class="d-flex flex-column">
+        <h6>{{ results[0].docs[0].titleAr }}</h6>
+        <a :href="results[0].docs[0].attachment"> PDF </a>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -85,10 +92,12 @@ export default {
         attachment: [{ required: true, message: "This Field Is Required" }],
       },
       client: null,
+      results: null,
     };
   },
   async fetch() {
     await this.getClient();
+    await this.getResult();
   },
   methods: {
     toggleModal() {
@@ -100,11 +109,16 @@ export default {
       }
     },
     async getClient() {
-      const clientRed = await this.$axios.get(
+      const clientRes = await this.$axios.get(
         `/fetch/${this.$route.params.id}/client`
       );
-      this.client = await clientRed.data;
-      console.log(this.client);
+      this.client = await clientRes.data;
+    },
+    async getResult() {
+      const resultRes = await this.$axios.get(
+        `/results?client=${this.$route.params.id}`
+      );
+      this.results = await resultRes.data;
     },
     addResult() {
       this.$refs.resultForm.validate(async (valid) => {
