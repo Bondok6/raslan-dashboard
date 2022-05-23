@@ -299,7 +299,7 @@ export default {
             message: "Delete completed",
           });
           await this.$axios.delete(`instruction/${instruction.id}`);
-          this.getAllInstructions();
+          await this.getAllInstructions();
         })
         .catch(() => {
           this.$message({
