@@ -131,7 +131,7 @@
         >
           <div class="d-flex flex-column">
             <h6 class="mb-3">{{ data.titleAr }}</h6>
-            <a :href="data.attachment">
+            <a :href="data.attachment" target="_blank">
               <img src="@/assets/imgs/clients/pdf.png" alt="pdf incon" />
             </a>
           </div>

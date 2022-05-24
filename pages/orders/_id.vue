@@ -1,5 +1,6 @@
 <template>
   <section v-if="!$fetchState.pending">
+    <!-- Flash Messages -->
     <div class="alert alert-danger" role="alert" v-if="errorMsg">
       بيانات مفقودة! من فضلك تأكد من ادخال جميع البيانات بشكل صحيح.
     </div>
@@ -7,7 +8,8 @@
       تم تعديل الحجز بنجاح .
     </div>
 
-    <div class="d-flex flex-row-reverse gap-2">
+    <!-- Options - icons -->
+    <div class="d-flex flex-row-reverse gap-3">
       <img
         src="@/assets/imgs/delete-icon.png"
         alt="delete icon"
@@ -20,8 +22,15 @@
         role="button"
         @click="disabled = false"
       />
+      <img
+        src="@/assets/imgs/orders/file-icon.png"
+        alt="upload-file icon"
+        role="button"
+        @click="toggleModal"
+      />
     </div>
 
+    <!-- Order Details -->
     <div class="cards mt-3">
       <div class="card-item card-item--orders w-100 my-2">
         <div class="date d-flex">
@@ -98,7 +107,7 @@
                   <el-date-picker
                     v-model="visitDate"
                     type="date"
-                    :disabled="disabled || orderStatus == 'rejected'"
+                    :disabled="disabled || orderStatus != 'accepted'"
                     required
                   >
                   </el-date-picker>
@@ -137,28 +146,76 @@
                     step: '00:30',
                     end: '24:00',
                   }"
-                  :disabled="disabled || orderStatus == 'rejected'"
-                  required
+                  :disabled="disabled || orderStatus != 'accepted'"
                 >
                 </el-time-select>
+              </h6>
+            </div>
+            <div
+              class="d-flex align-items-center gap-2"
+              v-if="order.booking == 'external'"
+            >
+              <h6 class="key">من</h6>
+              <h6 class="value">
+                <el-time-select v-model="timeFrom" disabled> </el-time-select>
+              </h6>
+              <h6 class="key">الي</h6>
+              <h6 class="value">
+                <el-time-select v-model="timeTo" disabled> </el-time-select>
               </h6>
             </div>
           </div>
         </div>
       </div>
 
-      <div
-        class="card-item card-item--orders w-100 my-2"
-        v-if="order.products.length > 0"
-      >
+      <div class="card-item card-item--orders w-100 my-2">
         <div class="date d-flex">
           <div class="align-self-center text-center">تفاصيل الخدمة</div>
         </div>
-        <div class="d-flex flex-wrap mx-5 gap-5 w-100">
-          <div class="my-2 d-flex align-items-center gap-2">
+        <div
+          class="d-flex flex-wrap mx-5 gap-5 w-100"
+          v-if="order.products.length > 0"
+        >
+          <div
+            class="my-2 d-flex align-items-center gap-2"
+            v-for="product of order.products"
+            :key="product"
+          >
             <h6 class="key">الفحص</h6>
-            <h6 class="value">{{ order.products[0].titleAr }}</h6>
+            <h6 class="value">{{ product.titleAr }}</h6>
           </div>
+        </div>
+        <div
+          class="d-flex flex-wrap mx-5 gap-5 w-100"
+          v-if="order.images.length > 0"
+        >
+          <div
+            class="my-2 d-flex align-items-center gap-2"
+            v-for="image of order.images"
+            :key="image"
+          >
+            <img :src="image" alt="client image" width="150" height="150" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card-item card-item--orders w-100 my-2">
+        <div class="date d-flex">
+          <div class="align-self-center text-center">نتيجة التحليل</div>
+        </div>
+        <div class="d-flex flex-wrap mx-5 gap-5 w-100" v-if="results">
+          <div
+            class="my-2 d-flex align-items-center gap-2"
+            v-for="result of results"
+            :key="result.id"
+          >
+            <a :href="result.attachment" target="_blank">
+              <img src="@/assets/imgs/clients/pdf.png" alt="pdf incon" />
+            </a>
+          </div>
+        </div>
+        <div v-else class="m-5 w-100 align-middle">
+          لا توجد نتيجة مضافة حتي الان
         </div>
       </div>
 
@@ -176,6 +233,7 @@
       </div>
     </div>
 
+    <!-- Save&Cancel buttons -->
     <div
       class="buttons w-100 p-3 d-flex gap-2 justify-content-end"
       v-if="!disabled"
@@ -195,6 +253,104 @@
         الغاء
       </button>
     </div>
+
+    <!-- Add Result -->
+    <UIPopupForm
+      v-if="modalTrigger"
+      :modalTrigger="modalTrigger"
+      @update:modalTrigger="toggleModal"
+    >
+      <el-form
+        class="p-5 d-flex flex-column"
+        :rules="resultFormRules"
+        :model="resultForm"
+        ref="resultForm"
+      >
+        <el-form-item label=" " prop="titleAr">
+          <span> اسم التحليل باللغة العربية </span>
+          <el-input
+            v-model="resultForm.titleAr"
+            placeholder="اكتب اسم التحليل باللغة العربية"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="titleEn">
+          <span>اسم التحليل باللغة الانجليزية</span>
+          <el-input
+            v-model="resultForm.titleEn"
+            placeholder="اكتب اسم التحليل باللغة الانجليزية"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="attachment">
+          <label for="formFile" class="form-label">اختر نتيجة التحليل</label>
+          <input
+            class="form-control"
+            type="file"
+            id="formFile"
+            @change="onFileSelected"
+            accept=""
+          />
+        </el-form-item>
+
+        <button
+          type="submit"
+          class="secondary-btn w-50 align-self-end"
+          @click.prevent="addResult"
+        >
+          اضافة نتيجة
+        </button>
+      </el-form>
+    </UIPopupForm>
+
+    <!-- Update Result -->
+    <UIPopupForm
+      v-if="editModalTrigger"
+      :modalTrigger="editModalTrigger"
+      @update:modalTrigger="toggleEditModal"
+    >
+      <el-form
+        class="p-5 d-flex flex-column"
+        :rules="editResultFormRules"
+        :model="editResultForm"
+        ref="editResultForm"
+      >
+        <el-form-item label=" " prop="titleAr">
+          <span> اسم التحليل باللغة العربية </span>
+          <el-input
+            v-model="editResultForm.titleAr"
+            placeholder="اكتب اسم التحليل باللغة العربية"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="titleEn">
+          <span>اسم التحليل باللغة الانجليزية</span>
+          <el-input
+            v-model="editResultForm.titleEn"
+            placeholder="اكتب اسم التحليل باللغة الانجليزية"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="attachment">
+          <label for="formFile" class="form-label">اختر نتيجة التحليل</label>
+          <input
+            class="form-control"
+            type="file"
+            id="formFile"
+            @change="onFileSelected"
+            accept=""
+          />
+        </el-form-item>
+
+        <button
+          type="submit"
+          class="secondary-btn w-50 align-self-end"
+          @click.prevent="editResult"
+        >
+          حفظ التغييرات
+        </button>
+      </el-form>
+    </UIPopupForm>
   </section>
 </template>
 
@@ -235,10 +391,28 @@ export default {
       clientNotes: "",
       errorMsg: false,
       successMsg: false,
+      timeFrom: "",
+      timeTo: "",
+      modalTrigger: false,
+      editModalTrigger: false,
+      editResultForm: { attachment: null },
+      resultForm: { attachment: null },
+      resultFormRules: {
+        titleAr: [{ required: true, message: "This Field Is Required" }],
+        titleEn: [{ required: true, message: "This Field Is Required" }],
+        attachment: [{ required: true, message: "This Field Is Required" }],
+      },
+      editResultFormRules: {
+        titleAr: [{ required: true, message: "This Field Is Required" }],
+        titleEn: [{ required: true, message: "This Field Is Required" }],
+        attachment: [{ required: true, message: "This Field Is Required" }],
+      },
+      results: null,
     };
   },
   async fetch() {
     await this.getOrder();
+    await this.getResult();
   },
   methods: {
     async getOrder() {
@@ -248,6 +422,8 @@ export default {
       this.visitDate = await order.data.day;
       this.visitTime = await order.data.timeAttendance;
       this.clientNotes = await order.data.whyRejected;
+      this.timeFrom = await order.data.from;
+      this.timeTo = await order.data.to;
     },
     dateFormat(date) {
       const df = new Date(date);
@@ -294,23 +470,95 @@ export default {
         day: this.visitDate,
       };
 
-      const areTruthy = Object.values(editOrderForm).every((value) => value);
-
       console.log(editOrderForm);
-      if (areTruthy) {
-        await this.$axios.patch(
-          `/orders/${this.$route.params.id}`,
-          editOrderForm
-        );
-        this.disabled = true;
-        this.successMsg = true;
-        this.errorMsg = false;
+
+      if (
+        editOrderForm.status != "rejected" &&
+        editOrderForm.status != "accepted"
+      ) {
+        try {
+          await this.$axios.patch(`/orders/${this.$route.params.id}`, {
+            status: editOrderForm.status,
+          });
+          this.disabled = true;
+          this.successMsg = true;
+          this.errorMsg = false;
+        } catch (error) {
+          this.errorMsg = true;
+        }
       } else {
-        this.errorMsg = true;
+        try {
+          await this.$axios.patch(
+            `/orders/${this.$route.params.id}`,
+            editOrderForm
+          );
+
+          this.disabled = true;
+          this.successMsg = true;
+          this.errorMsg = false;
+        } catch (error) {
+          this.errorMsg = true;
+        }
       }
+    },
+    toggleModal() {
+      this.modalTrigger = !this.modalTrigger;
+    },
+    toggleEditModal(id) {
+      this.editModalTrigger = !this.editModalTrigger;
+      this.targetId = id;
+    },
+    onFileSelected(e) {
+      if (e.target.files.length > 0) {
+        this.resultForm.attachment = e.target.files[0];
+        this.editResultForm.attachment = e.target.files[0];
+      }
+    },
+    addResult() {
+      this.$refs.resultForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            const formData = new FormData();
+            formData.append("pdf", this.resultForm.attachment);
+            const fileRes = await this.$axios.post("/images", formData);
+            const attachment = await fileRes.data;
+
+            const fd = new FormData();
+            fd.append("titleAr", this.resultForm.titleAr);
+            fd.append("titleEn", this.resultForm.titleEn);
+            fd.append("attachment", attachment);
+            fd.append("subject", this.$route.params.id);
+            fd.append("subjectType", "order");
+
+            await this.$axios.post("/results", fd);
+
+            // Reset
+            this.resultForm = {};
+            this.toggleModal();
+            await this.getResult();
+            this.successMsg = true;
+            this.errorMsg = false;
+          } catch (error) {
+            this.errorMsg = true;
+          } finally {
+            loading.close();
+          }
+        }
+      });
+    },
+    async getResult() {
+      const resultRes = await this.$axios.get(
+        `/results?order=${this.$route.params.id}`
+      );
+      this.results = await resultRes.data[0].docs;
+      console.log(this.reults);
     },
   },
 };
 </script>
-
-<style></style>
