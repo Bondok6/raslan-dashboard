@@ -1,5 +1,12 @@
 <template>
   <section v-if="!$fetchState.pending">
+    <div class="alert alert-danger" role="alert" v-if="errorMsg">
+      بيانات مفقودة! من فضلك تأكد من ادخال جميع البيانات بشكل صحيح.
+    </div>
+    <div class="alert alert-success" role="alert" v-if="successMsg">
+      تم تعديل الحجز بنجاح .
+    </div>
+
     <div class="d-flex flex-row-reverse gap-2">
       <img
         src="@/assets/imgs/delete-icon.png"
@@ -11,7 +18,7 @@
         src="@/assets/imgs/edit-icon.png"
         alt="edit icon"
         role="button"
-        @click="editOrder"
+        @click="disabled = false"
       />
     </div>
 
@@ -45,6 +52,7 @@
                   v-model="orderStatus"
                   placeholder="Select"
                   :disabled="disabled"
+                  required
                 >
                   <el-option
                     v-for="item in statusOptions"
@@ -59,9 +67,10 @@
             <div v-if="orderStatus == 'rejected'">
               <el-input
                 type="input"
-                v-model="adminNotes"
+                v-model="whyRejected"
                 placeholder="سبب الرفض"
                 required
+                :disabled="disabled"
               ></el-input>
             </div>
           </div>
@@ -89,7 +98,8 @@
                   <el-date-picker
                     v-model="visitDate"
                     type="date"
-                    :disabled="disabled"
+                    :disabled="disabled || orderStatus == 'rejected'"
+                    required
                   >
                   </el-date-picker>
                 </div>
@@ -127,7 +137,8 @@
                     step: '00:30',
                     end: '24:00',
                   }"
-                  :disabled="disabled"
+                  :disabled="disabled || orderStatus == 'rejected'"
+                  required
                 >
                 </el-time-select>
               </h6>
@@ -207,7 +218,9 @@ export default {
       ],
       orderStatus: "",
       reason: false,
-      adminNotes: "",
+      whyRejected: "",
+      errorMsg: false,
+      successMsg: false,
     };
   },
   async fetch() {
@@ -246,15 +259,13 @@ export default {
           });
         });
     },
-    editOrder() {
-      this.disabled = false;
-    },
     cancelEdit() {
       this.adminNotes = "";
       this.orderStatus = this.order.status;
       this.visitDate = this.order.day;
       this.visitTime = this.order.from;
       this.disabled = true;
+      this.errorMsg = false;
     },
     async saveEdit() {
       if (this.visitDate != this.order.day)
@@ -262,15 +273,25 @@ export default {
 
       const editOrderForm = {
         status: this.orderStatus,
+        whyRejected: this.whyRejected || " ",
         timeAttendance: this.visitTime,
         day: this.visitDate,
-        adminNotes: this.adminNotes,
       };
-      await this.$axios.patch(
-        `/orders/${this.$route.params.id}`,
-        editOrderForm
-      );
-      this.disabled = true;
+
+      const areTruthy = Object.values(editOrderForm).every((value) => value);
+
+      console.log(editOrderForm);
+      if (areTruthy) {
+        await this.$axios.patch(
+          `/orders/${this.$route.params.id}`,
+          editOrderForm
+        );
+        this.disabled = true;
+        this.successMsg = true;
+        this.errorMsg = false;
+      } else {
+        this.errorMsg = true;
+      }
     },
   },
 };

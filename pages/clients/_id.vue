@@ -1,6 +1,6 @@
 <template>
   <section v-if="!$fetchState.pending">
-    <UIAddButton @click="toggleModal" buttonText="اضافة تحليل" />
+    <UIAddButton @click="toggleModal" buttonText="اضافة نتيجة" />
 
     <!-- Client Info -->
     <h6 class="key">
