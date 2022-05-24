@@ -32,6 +32,7 @@
 
     <!-- Order Details -->
     <div class="cards mt-3">
+      <!-- تفاصيل الحجز -->
       <div class="card-item card-item--orders w-100 my-2">
         <div class="date d-flex">
           <div class="align-self-center text-center">تفاصيل الحجز</div>
@@ -86,6 +87,7 @@
         </div>
       </div>
 
+      <!-- بيانات المعمل -->
       <div class="card-item card-item--orders w-100 my-2">
         <div class="date d-flex">
           <div class="align-self-center text-center">بيانات المعمل</div>
@@ -168,6 +170,7 @@
         </div>
       </div>
 
+      <!-- تفاصيل الخدمة -->
       <div class="card-item card-item--orders w-100 my-2">
         <div class="date d-flex">
           <div class="align-self-center text-center">تفاصيل الخدمة</div>
@@ -199,6 +202,7 @@
         </div>
       </div>
 
+      <!-- نتيجة التحليل -->
       <div class="card-item card-item--orders w-100 my-2">
         <div class="date d-flex">
           <div class="align-self-center text-center">نتيجة التحليل</div>
@@ -219,6 +223,7 @@
         </div>
       </div>
 
+      <!-- ملاحظات للعميل -->
       <div class="card-item w-100 my-2">
         <label for="exampleFormControlTextarea1" class="form-label fw-bold"
           >ملاحظات للعميل</label
@@ -395,14 +400,8 @@ export default {
       timeTo: "",
       modalTrigger: false,
       editModalTrigger: false,
-      editResultForm: { attachment: null },
       resultForm: { attachment: null },
       resultFormRules: {
-        titleAr: [{ required: true, message: "This Field Is Required" }],
-        titleEn: [{ required: true, message: "This Field Is Required" }],
-        attachment: [{ required: true, message: "This Field Is Required" }],
-      },
-      editResultFormRules: {
         titleAr: [{ required: true, message: "This Field Is Required" }],
         titleEn: [{ required: true, message: "This Field Is Required" }],
         attachment: [{ required: true, message: "This Field Is Required" }],
@@ -503,10 +502,6 @@ export default {
     },
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
-    },
-    toggleEditModal(id) {
-      this.editModalTrigger = !this.editModalTrigger;
-      this.targetId = id;
     },
     onFileSelected(e) {
       if (e.target.files.length > 0) {
