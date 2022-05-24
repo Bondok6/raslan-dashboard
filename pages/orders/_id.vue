@@ -161,6 +161,19 @@
           </div>
         </div>
       </div>
+
+      <div class="card-item w-100 my-2">
+        <label for="exampleFormControlTextarea1" class="form-label fw-bold"
+          >ملاحظات للعميل</label
+        >
+        <textarea
+          class="form-control"
+          id="exampleFormControlTextarea1"
+          rows="3"
+          v-model="clientNotes"
+          :disabled="disabled"
+        ></textarea>
+      </div>
     </div>
 
     <div
@@ -219,6 +232,7 @@ export default {
       orderStatus: "",
       reason: false,
       whyRejected: "",
+      clientNotes: "",
       errorMsg: false,
       successMsg: false,
     };
@@ -233,6 +247,7 @@ export default {
       this.orderStatus = await order.data.status;
       this.visitDate = await order.data.day;
       this.visitTime = await order.data.timeAttendance;
+      this.clientNotes = await order.data.whyRejected;
     },
     dateFormat(date) {
       const df = new Date(date);
@@ -274,6 +289,7 @@ export default {
       const editOrderForm = {
         status: this.orderStatus,
         whyRejected: this.whyRejected || " ",
+        clientNotes: this.clientNotes || " ",
         timeAttendance: this.visitTime,
         day: this.visitDate,
       };
