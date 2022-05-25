@@ -182,7 +182,7 @@
           <div
             class="my-2 d-flex align-items-center gap-2"
             v-for="product of order.products"
-            :key="product"
+            :key="product.id"
           >
             <h6 class="key">الفحص</h6>
             <h6 class="value">{{ product.titleAr }}</h6>
@@ -194,8 +194,8 @@
         >
           <div
             class="my-2 d-flex align-items-center gap-2"
-            v-for="image of order.images"
-            :key="image"
+            v-for="(image, index) in order.images"
+            :key="index"
           >
             <img :src="image" alt="client image" width="150" height="150" />
           </div>
@@ -210,8 +210,8 @@
         <div class="d-flex flex-wrap mx-5 gap-5 w-100" v-if="results">
           <div
             class="my-2 d-flex align-items-center gap-2"
-            v-for="result of results"
-            :key="result.id"
+            v-for="(result, index) in results"
+            :key="index"
           >
             <a :href="result.attachment" target="_blank">
               <img src="@/assets/imgs/clients/pdf.png" alt="pdf incon" />
@@ -304,55 +304,6 @@
           @click.prevent="addResult"
         >
           اضافة نتيجة
-        </button>
-      </el-form>
-    </UIPopupForm>
-
-    <!-- Update Result -->
-    <UIPopupForm
-      v-if="editModalTrigger"
-      :modalTrigger="editModalTrigger"
-      @update:modalTrigger="toggleEditModal"
-    >
-      <el-form
-        class="p-5 d-flex flex-column"
-        :rules="editResultFormRules"
-        :model="editResultForm"
-        ref="editResultForm"
-      >
-        <el-form-item label=" " prop="titleAr">
-          <span> اسم التحليل باللغة العربية </span>
-          <el-input
-            v-model="editResultForm.titleAr"
-            placeholder="اكتب اسم التحليل باللغة العربية"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label=" " prop="titleEn">
-          <span>اسم التحليل باللغة الانجليزية</span>
-          <el-input
-            v-model="editResultForm.titleEn"
-            placeholder="اكتب اسم التحليل باللغة الانجليزية"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label=" " prop="attachment">
-          <label for="formFile" class="form-label">اختر نتيجة التحليل</label>
-          <input
-            class="form-control"
-            type="file"
-            id="formFile"
-            @change="onFileSelected"
-            accept=""
-          />
-        </el-form-item>
-
-        <button
-          type="submit"
-          class="secondary-btn w-50 align-self-end"
-          @click.prevent="editResult"
-        >
-          حفظ التغييرات
         </button>
       </el-form>
     </UIPopupForm>
@@ -469,8 +420,6 @@ export default {
         day: this.visitDate,
       };
 
-      console.log(editOrderForm);
-
       if (
         editOrderForm.status != "rejected" &&
         editOrderForm.status != "accepted"
@@ -506,7 +455,6 @@ export default {
     onFileSelected(e) {
       if (e.target.files.length > 0) {
         this.resultForm.attachment = e.target.files[0];
-        this.editResultForm.attachment = e.target.files[0];
       }
     },
     addResult() {
