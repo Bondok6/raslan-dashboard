@@ -175,7 +175,7 @@
     <div class="cards">
       <div
         class="card-item d-flex align-items-center justify-content-around my-2"
-        v-for="test in tests"
+        v-for="test in filteredTests"
         :key="test.id"
       >
         <div class="icon">
@@ -268,6 +268,13 @@ export default {
       this.tests = await testsRes.data.docs;
       this.totalPages = await testsRes.data.totalPages;
       this.page = await testsRes.data.page;
+    },
+  },
+  computed: {
+    filteredTests() {
+      return this.tests.filter((test) =>
+        test.titleAr.includes(this.searchInput)
+      );
     },
   },
 };
