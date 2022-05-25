@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section v-if="!$fetchState.pending">
     <UIAddButton @click="toggleModal" buttonText="اضافة منطقة" />
 
     <!-- Add Region -->

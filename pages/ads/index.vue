@@ -1,5 +1,5 @@
 <template>
-  <section class="page ads-page">
+  <section class="page ads-page" v-if="!$fetchState.pending">
     <UIAddButton @click="toggleModal" buttonText="اضافة اعلان" />
 
     <!-- Add Ads -->

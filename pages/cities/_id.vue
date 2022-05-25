@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <section v-if="!$fetchState.pending">
     <UIPopupForm
       v-if="editModalTrigger"
       :modalTrigger="editModalTrigger"
@@ -51,7 +51,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>

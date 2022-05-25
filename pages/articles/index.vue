@@ -1,6 +1,7 @@
 <template>
   <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة مقالة" />
+
     <div class="search w-50">
       <img
         src="@/assets/imgs/orders/search.png"

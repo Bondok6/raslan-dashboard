@@ -1,52 +1,63 @@
 <template>
   <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة تحليل" />
+    <!-- Search -->
     <div class="search w-50">
       <img
         src="@/assets/imgs/orders/search.png"
         alt="search icon"
         class="search__icon"
       />
-      <el-input placeholder="ابحث في التحاليل" v-model="input"></el-input>
+      <el-input placeholder="ابحث في التحاليل" v-model="searchInput"></el-input>
     </div>
 
+    <!-- Add Analysis -->
     <div class="mt-3" v-if="modalTrigger">
-      <el-form ref="form" :model="form">
+      <el-form
+        :rules="analysisFormRules"
+        :model="analysisForm"
+        ref="analysisForm"
+      >
         <div class="row">
-          <el-form-item class="col-lg-4 col-md-12">
-            <el-upload
-              class="upload-demo"
-              drag
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :file-list="fileList"
-              multiple
+          <el-form-item label=" " prop="image" class="col-lg-4 col-md-12">
+            <label for="formFile" class="form-label"
+              >أضف الايقون التي تعبر عن التحليل</label
             >
-              <i class="el-icon-upload"></i>
-              <div class="el-upload__text">
-                اضف الصورة الخاصة بالتحليل او
-                <em>اضغط للتحميل</em>
-              </div>
-            </el-upload>
+            <input
+              class="form-control"
+              type="file"
+              id="formFile"
+              @change="onImageSeclected"
+              accept="image/png, image/jpeg"
+            />
+            <div class="text-center m-2">
+              <img
+                :src="selectedImageUrl"
+                alt="preview"
+                v-if="selectedImageUrl"
+                width="150"
+                height="100"
+              />
+            </div>
           </el-form-item>
 
           <div class="col-lg-8 row">
-            <el-form-item label=" " class="col-lg-6 col-md-12">
+            <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleAr">
               <span>اسم التحليل باللغة العربية</span>
               <el-input
-                v-model="input"
+                v-model="analysisForm.titleAr"
                 placeholder="اكتب اسم التحليل باللغة العربية"
               ></el-input>
             </el-form-item>
 
-            <el-form-item label=" " class="col-lg-6 col-md-12">
+            <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleEn">
               <span>اسم التحليل باللغة الانجليزية</span>
               <el-input
-                v-model="input"
+                v-model="analysisForm.titleEn"
                 placeholder="كتب اسم التحليل باللغة الانجليزية"
               ></el-input>
             </el-form-item>
+
             <el-form-item class="col-lg-12">
               <span>اختر الفروع التي ينتمى اليها</span>
               <el-select v-model="caseInput" placeholder="الفروع" class="w-100">
@@ -62,20 +73,30 @@
           </div>
         </div>
         <div class="row">
-          <el-form-item label=" " class="col-lg-4 col-md-12">
+          <el-form-item
+            label=" "
+            class="col-lg-4 col-md-12"
+            prop="priceAfterDiscount"
+          >
             <span>السعر النهائي</span>
-            <el-input v-model="input" placeholder="اكتب السعر"></el-input>
+            <el-input
+              v-model="analysisForm.priceAfterDiscount"
+              placeholder="اكتب السعر"
+            ></el-input>
           </el-form-item>
 
-          <el-form-item label=" " class="col-lg-4 col-md-12">
+          <el-form-item label=" " class="col-lg-4 col-md-12" prop="price">
             <span>السعر قبل الخصم</span>
-            <el-input v-model="input" placeholder="اكتب السعر"></el-input>
+            <el-input
+              v-model="analysisForm.price"
+              placeholder="اكتب السعر"
+            ></el-input>
           </el-form-item>
 
-          <el-form-item class="col-lg-4 col-md-12">
+          <el-form-item class="col-lg-4 col-md-12" prop="availableAt">
             <span>مكان الحجز</span>
             <el-select
-              v-model="caseInput"
+              v-model="analysisForm.availableAt"
               placeholder="اختر مكان الحجز"
               class="w-100"
             >
@@ -143,25 +164,42 @@
       </el-form>
     </div>
 
+    <!-- No Analysis -->
     <UIEmpty
-      v-else
+      v-if="tests.length < 1"
       imgSrc="analysis/no-analysis.png"
       alt="no analysis"
       caption="قم بإضافة التحاليل التابعة للمعمل"
     />
 
-    <!-- <div class="cards">
-      <div class="card-item d-flex align-items-center justify-content-around">
+    <div class="cards">
+      <div
+        class="card-item d-flex align-items-center justify-content-around my-2"
+        v-for="test in tests"
+        :key="test.id"
+      >
         <div class="icon">
-          <img src="@/assets/imgs/analysis/analysis-icon.png" alt="icon" />
+          <img :src="test.icon" alt="icon" width="100" height="100" />
         </div>
         <div class="content mx-2">
-          <h6>تحليل فيتامين د</h6>
-          <div class="d-flex pt-2">
+          <h6>{{ test.titleAr }}</h6>
+          <div class="d-flex pt-2" v-if="test.availableAt == 'both'">
             <figure class="ms-2">
               <img src="@/assets/imgs/analysis/heal.png" alt="heal" />
               <figcaption class="d-inline">زيارة منزلية</figcaption>
             </figure>
+            <figure>
+              <img src="@/assets/imgs/analysis/check.png" alt="check" />
+              <figcaption class="d-inline">حجز خارجي</figcaption>
+            </figure>
+          </div>
+          <div class="d-flex pt-2" v-else-if="test.availableAt == 'home'">
+            <figure class="ms-2">
+              <img src="@/assets/imgs/analysis/heal.png" alt="heal" />
+              <figcaption class="d-inline">زيارة منزلية</figcaption>
+            </figure>
+          </div>
+          <div class="d-flex pt-2" v-else>
             <figure>
               <img src="@/assets/imgs/analysis/check.png" alt="check" />
               <figcaption class="d-inline">حجز خارجي</figcaption>
@@ -173,13 +211,25 @@
             <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
             <img src="@/assets/imgs/delete-icon.png" alt="delete icon" />
           </div>
-          <div class="mt-1">
-            <div class="price">100EGP</div>
-            <del>150EGP</del>
+          <div class="mt-1" v-if="test.priceAfterDiscount">
+            <div class="price">{{ test.priceAfterDiscount }}EGP</div>
+            <del>{{ test.price }}EGP</del>
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
+
+    <!-- Pagination -->
+    <el-pagination
+      v-if="totalPages > 1"
+      class="position-fixed bottom-0"
+      background
+      layout="prev, pager, next"
+      :current-page.sync="page"
+      @current-change="getTests"
+      :total="totalPages * 10"
+    >
+    </el-pagination>
   </section>
 </template>
 
@@ -189,11 +239,35 @@ export default {
     return {
       modalTrigger: false,
       input: "",
+      searchInput: "",
+      selectedImage: null,
+      selectedImageUrl: null,
+      analysisForm: {
+        image: null,
+      },
+      analysisFormRules: {
+        titleAr: [{ required: true, message: "Arabic title Is Required" }],
+        titleEn: [{ required: true, message: "English title Is Required" }],
+      },
+      page: 1,
+      totalPages: 1,
+      tests: [],
     };
+  },
+  async fetch() {
+    await this.getTests();
+    console.log(this.tests);
   },
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    async getTests() {
+      let params = { page: this.page };
+      const testsRes = await this.$axios.get("/tests", { params });
+      this.tests = await testsRes.data.docs;
+      this.totalPages = await testsRes.data.totalPages;
+      this.page = await testsRes.data.page;
     },
   },
 };
