@@ -1,6 +1,7 @@
 <template>
   <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة تحليل" />
+
     <!-- Search -->
     <div class="search w-50">
       <img
@@ -172,17 +173,28 @@
       caption="قم بإضافة التحاليل التابعة للمعمل"
     />
 
-    <div class="cards">
+    <!-- Analysis -->
+    <div class="cards" v-if="!modalTrigger">
       <div
         class="card-item d-flex align-items-center justify-content-around my-2"
         v-for="test in filteredTests"
         :key="test.id"
       >
-        <div class="icon">
+        <div
+          class="icon"
+          @click="$router.push(`/analysis/${test.id}`)"
+          role="button"
+        >
           <img :src="test.icon" alt="icon" width="100" height="100" />
         </div>
-        <div class="content mx-2">
-          <h6>{{ test.titleAr }}</h6>
+        <div
+          class="content mx-2"
+          @click="$router.push(`/analysis/${test.id}`)"
+          role="button"
+        >
+          <h6>
+            {{ test.titleAr }}
+          </h6>
           <div class="d-flex pt-2" v-if="test.availableAt == 'both'">
             <figure class="ms-2">
               <img src="@/assets/imgs/analysis/heal.png" alt="heal" />
@@ -209,7 +221,11 @@
         <div>
           <div class="options">
             <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
-            <img src="@/assets/imgs/delete-icon.png" alt="delete icon" />
+            <img
+              src="@/assets/imgs/delete-icon.png"
+              alt="delete icon"
+              @click="deleteTest(test)"
+            />
           </div>
           <div class="mt-1" v-if="test.priceAfterDiscount">
             <div class="price">{{ test.priceAfterDiscount }}EGP</div>
@@ -256,7 +272,6 @@ export default {
   },
   async fetch() {
     await this.getTests();
-    console.log(this.tests);
   },
   methods: {
     toggleModal() {
@@ -268,6 +283,31 @@ export default {
       this.tests = await testsRes.data.docs;
       this.totalPages = await testsRes.data.totalPages;
       this.page = await testsRes.data.page;
+    },
+    deleteTest(test) {
+      this.$confirm(
+        `Are you sure you want to delete test ${test.titleAr}`,
+        "Warning",
+        {
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(async () => {
+          this.$message({
+            type: "success",
+            message: "Delete completed",
+          });
+          await this.$axios.delete(`product/${test.id}`);
+          await this.getTests();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Delete canceled",
+          });
+        });
     },
   },
   computed: {
