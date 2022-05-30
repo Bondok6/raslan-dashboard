@@ -70,8 +70,9 @@
                 <el-option
                   v-for="branch in allBranches"
                   :key="branch.id"
-                  :label="branch.titleAr"
+                  :label="branch.city.nameAr + ', ' + branch.titleAr"
                   :value="branch.id"
+                  class="text-center"
                 >
                 </el-option>
               </el-select>
@@ -107,10 +108,11 @@
               class="w-100"
             >
               <el-option
-                v-for="(location, index) in locations"
-                :key="index"
-                :label="location"
-                :value="location"
+                v-for="[key, val] of Object.entries(locations)"
+                :key="key"
+                :label="val"
+                :value="key"
+                class="text-center"
               >
               </el-option>
             </el-select>
@@ -245,7 +247,11 @@
         </div>
         <div>
           <div class="options">
-            <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
+            <img
+              src="@/assets/imgs/edit-icon.png"
+              alt="edit icon"
+              @click="updateTest(test.id)"
+            />
             <img
               src="@/assets/imgs/delete-icon.png"
               alt="delete icon"
@@ -320,7 +326,11 @@ export default {
       totalPages: 1,
       tests: [],
       allBranches: [],
-      locations: ["both", "home", "lab"],
+      locations: {
+        home: "في المنزل فقط",
+        lab: "في المعمل فقط",
+        both: "في المنزل او المعمل",
+      },
     };
   },
   async fetch() {

@@ -5,13 +5,13 @@
     >
       <div class="d-flex gap-2 align-items-center">
         <div class="icon" role="button">
-          <img :src="test.icon" alt="icon" width="100" height="100" />
+          <img :src="pack.image" alt="icon" width="100" height="100" />
         </div>
         <div class="content mx-2" role="button">
           <h6>
-            {{ test.titleAr }}
+            {{ pack.titleAr }}
           </h6>
-          <div class="d-flex pt-2" v-if="test.availableAt == 'both'">
+          <div class="d-flex pt-2" v-if="pack.availableAt == 'both'">
             <figure class="ms-2">
               <img src="@/assets/imgs/analysis/heal.png" alt="heal" />
               <figcaption class="d-inline">زيارة منزلية</figcaption>
@@ -21,7 +21,7 @@
               <figcaption class="d-inline">حجز خارجي</figcaption>
             </figure>
           </div>
-          <div class="d-flex pt-2" v-else-if="test.availableAt == 'home'">
+          <div class="d-flex pt-2" v-else-if="pack.availableAt == 'home'">
             <figure class="ms-2">
               <img src="@/assets/imgs/analysis/heal.png" alt="heal" />
               <figcaption class="d-inline">زيارة منزلية</figcaption>
@@ -42,14 +42,14 @@
           <img
             src="@/assets/imgs/delete-icon.png"
             alt="delete icon"
-            @click="deleteTest(test)"
+            @click.prevent="deletePackage(pack)"
           />
         </div>
-        <div class="mt-1" v-if="test.priceAfterDiscount">
+        <div class="mt-1" v-if="pack.priceAfterDiscount">
           <div class="orange-text fw-bold">
-            {{ test.priceAfterDiscount }}EGP
+            {{ pack.priceAfterDiscount }}EGP
           </div>
-          <del>{{ test.price }}EGP</del>
+          <del>{{ pack.price }}EGP</del>
         </div>
       </div>
     </div>
@@ -61,7 +61,7 @@
           <li class="key">{{ branch.titleAr }}, {{ branch.region.nameAr }}</li>
         </ul>
       </div>
-      <div>
+      <!-- <div>
         <h5 class="purple-text py-2">النتايج المحتملة</h5>
         <ul
           class="px-3"
@@ -69,14 +69,20 @@
           :key="index"
         >
           <li>
-            <h6>{{ result.titleAr }}</h6>
-            <p class="key">{{ result.descriptionAr }}</p>
+            <h6>{{ pack.titleAr }}</h6>
+            <p class="key">{{ pack.descriptionAr }}</p>
           </li>
         </ul>
-      </div>
+      </div> -->
       <div>
         <h5 class="purple-text py-2">الاجراءات الازمة</h5>
-        <p class="key">{{ test.measuresAr }}</p>
+        <ul
+          class="list-inline"
+          v-for="measure in pack.measuresAr"
+          :key="measure"
+        >
+          <li class="key">{{ measure }}</li>
+        </ul>
       </div>
     </div>
   </section>
@@ -86,30 +92,28 @@
 export default {
   data() {
     return {
-      test: null,
-      possibleResults: [],
+      pack: [],
       branches: [],
     };
   },
   async fetch() {
-    await this.getTest();
+    await this.getPackage();
   },
   methods: {
-    async getTest() {
-      const testRes = await this.$axios.get(
+    async getPackage() {
+      const packageRes = await this.$axios.get(
         `/product/${this.$route.params.id}`
       );
-      this.test = await testRes.data;
-      this.possibleResults = await testRes.data.possibleResults;
-      if (this.test.branches.length < 1) return;
-      for (let i = 0; i < this.test.branches.length; i++) {
-        let branch = await this.$axios.get(`/branch/${this.test.branches[i]}`);
+      this.pack = await packageRes.data;
+      if (this.pack.branches.length < 1) return;
+      for (let i = 0; i < this.pack.branches.length; i++) {
+        let branch = await this.$axios.get(`/branch/${this.pack.branches[i]}`);
         this.branches.push(await branch.data);
       }
     },
-    deleteTest(test) {
+    deletePackage(pack) {
       this.$confirm(
-        `Are you sure you want to delete test ${test.titleAr}`,
+        `Are you sure you want to delete this package ${pack.titleAr}`,
         "Warning",
         {
           confirmButtonText: "Confirm",
@@ -122,8 +126,8 @@ export default {
             type: "success",
             message: "Delete completed",
           });
-          await this.$axios.delete(`product/${test.id}`);
-          this.$router.push("/analysis");
+          await this.$axios.delete(`product/${pack.id}`);
+          this.$router.push("/packages");
         })
         .catch(() => {
           this.$message({
