@@ -1,3 +1,6 @@
+/*! http://mths.be/codepointat v0.1.0 by @mathias */
+
+
 /*!
   * vue-router v3.5.3
   * (c) 2021 Evan You
@@ -56,6 +59,3 @@
  * @internal
  * @license Modernizr 3.0.0pre (Custom Build) | MIT
  */
-
-
-/*! http://mths.be/codepointat v0.1.0 by @mathias */
