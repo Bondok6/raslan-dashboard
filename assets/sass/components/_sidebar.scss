@@ -1,83 +1,106 @@
 .sidebar {
-    width: 300px;
-    background: #FFF;
+  width: 300px;
+  background: #fff;
+  height: 100vh;
+  transition: 0.5s linear;
+
+  .menu-icon {
+    display: none;
+  }
+
+  @media screen and (max-width: 800px) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100vh;
+    z-index: 100;
+    transform: translateX(100%);
 
-    @media screen and (max-width: 800px) {
-        display: none;
+    .menu-icon {
+      cursor: pointer;
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 5;
+      width: 30px;
+      transform: translateX(-100%);
+    }
+  }
+
+  &__logo-container {
+    height: 135px;
+    text-align: center;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+  }
+
+  &__logo-img {
+    margin: auto;
+  }
+
+  &__list-items {
+    height: calc(100vh - 135px);
+    overflow-y: scroll;
+    padding: 0 15px;
+
+    &::-webkit-scrollbar {
+      width: 5px;
     }
 
-    &__logo-container {
-        height: 135px;
-        text-align: center;
-        display: flex;
-        justify-items: center;
-        align-items: center;
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
     }
 
-    &__logo-img {
-        margin: auto;
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: #888;
     }
 
-    &__list-items {
-        height: calc(100vh - 135px);
-        overflow-y: scroll;
-        padding: 0 15px;
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  }
 
-        &::-webkit-scrollbar {
-            width: 5px;
-        }
+  .sidebar-item {
+    display: flex;
+    gap: 10px;
+    padding: 13px 15px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border-radius: 10px;
 
-        /* Track */
-        &::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
+    &.active-sideitem {
+      background-color: $primaryColor;
 
-        /* Handle */
-        &::-webkit-scrollbar-thumb {
-            background: #888;
-        }
+      .sidebar-item__label {
+        color: #fff;
+      }
 
-        /* Handle on hover */
-        &::-webkit-scrollbar-thumb:hover {
-            background: #555;
+      svg {
+        path {
+          fill: #fff;
         }
+      }
     }
 
-    .sidebar-item {
-        display: flex;
-        gap: 10px;
-        padding: 13px 15px;
-        margin-bottom: 5px;
-        cursor: pointer;
-        border-radius: 10px;
-
-        &.active-sideitem {
-            background-color: $primaryColor;
-
-            .sidebar-item__label {
-                color: #FFF;
-            }
-
-            svg {
-                path {
-                    fill: #FFF;
-                }
-            }
-        }
-
-        &__label {
-            color: $secondaryColor;
-            margin-bottom: 0;
-            font-weight: 400;
-        }
+    &__label {
+      color: $secondaryColor;
+      margin-bottom: 0;
+      font-weight: 400;
     }
+  }
 }
 
-.mobile-open-sidebar {
-    display: none;
+.activeMenu {
+  transform: translateX(0);
 
-    @media screen and (max-width: 800px) {
-        display: block;
-    }
+  .menu-icon {
+    transform: translateX(0);
+    right: 0;
+  }
 }

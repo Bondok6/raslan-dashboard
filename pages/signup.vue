@@ -11,28 +11,36 @@
             <img class="mw-100" src="@/assets/imgs/login-page.gif" alt="" />
           </div>
 
-          <el-form :rules="loginFormRules" :model="loginForm" ref="loginForm">
+          <el-form
+            :rules="signupFormRules"
+            :model="signupForm"
+            ref="signupForm"
+          >
+            <el-form-item label=" " prop="username">
+              <template #label>Username</template>
+              <el-input v-model="signupForm.username"></el-input>
+            </el-form-item>
+
             <el-form-item label=" " prop="phone">
               <template #label>Phone</template>
-              <el-input v-model="loginForm.phone"></el-input>
+              <el-input v-model="signupForm.phone"></el-input>
             </el-form-item>
 
             <el-form-item label=" " prop="password">
               <template #label>Password</template>
-              <el-input type="password" v-model="loginForm.password"></el-input>
+              <el-input
+                type="password"
+                v-model="signupForm.password"
+              ></el-input>
             </el-form-item>
           </el-form>
 
-          <nuxt-link to="/signup" class="text-center orange-text"
-            >انشاء حساب جديد</nuxt-link
-          >
-
           <div>
             <button
-              @click.prevent="submitLogin()"
+              @click.prevent="submitSignup()"
               class="primary-btn btn-fill mt-1"
             >
-              Login
+              Signup
             </button>
           </div>
         </div>
@@ -44,12 +52,13 @@
 <script>
 export default {
   layout: "full-page",
-  middleware: "loggedIn",
+
   data() {
     return {
       errorMsg: false,
-      loginForm: {},
-      loginFormRules: {
+      signupForm: {},
+      signupFormRules: {
+        username: [{ required: true, message: "Username Is Required" }],
         phone: [{ required: true, message: "Phone Is Required" }],
         password: [{ required: true, message: "Password Is Required" }],
       },
@@ -57,8 +66,8 @@ export default {
   },
 
   methods: {
-    submitLogin() {
-      this.$refs.loginForm.validate(async (valid) => {
+    submitSignup() {
+      this.$refs.signupForm.validate(async (valid) => {
         if (valid) {
           const loading = this.$loading({
             lock: true,
@@ -67,7 +76,8 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            await this.$auth.loginWith("local", { data: this.loginForm });
+            await this.$axios.post("/signup", this.signupForm);
+            this.$router.push("/login");
           } catch (error) {
             this.errorMsg = true;
           } finally {

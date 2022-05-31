@@ -1,6 +1,13 @@
 <template>
   <div>
-    <div class="sidebar">
+    <div :class="{ sidebar: true, activeMenu: menu }">
+      <img
+        src="@/assets/imgs/sidebar/menu-icon.svg"
+        alt=""
+        class="menu-icon"
+        @click="active"
+      />
+
       <div class="sidebar__logo-container">
         <img src="@/assets/imgs/logo.svg" class="sidebar__logo-img" alt="" />
       </div>
@@ -203,12 +210,28 @@
         </nuxt-link>
       </section>
     </div>
-    <div class="mobile-open-sidebar">hi</div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      menu: false,
+    };
+  },
+  mounted() {
+    const navLinks = document.querySelectorAll(".sidebar-item");
+    navLinks.forEach((link) => {
+      link.addEventListener("click", this.active);
+    });
+  },
+  methods: {
+    active() {
+      this.menu = !this.menu;
+    },
+  },
+};
 </script>
 
 <style></style>
