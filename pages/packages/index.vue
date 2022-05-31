@@ -393,17 +393,41 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            console.log(this.packagesForm);
+            const fd = new FormData();
+            fd.append("titleAr", this.packagesForm.titleAr);
+            fd.append("titleEn", this.packagesForm.titleEn);
+            fd.append("image", this.packagesForm.image);
+            fd.append("availableAt", this.packagesForm.availableAt);
+            this.packagesForm.branches.forEach((branch) => {
+              fd.append("branches", branch);
+            });
+            this.packagesForm.measuresAr.forEach((measure) => {
+              fd.append("measuresAr", measure);
+            });
+            this.packagesForm.measuresEn.forEach((measure) => {
+              fd.append("measuresEn", measure);
+            });
+            this.packagesForm.tests.forEach((test) => {
+              fd.append("tests", test);
+            });
+            fd.append("measuresAr", this.packagesForm.measuresAr);
+            fd.append("measuresEn", this.packagesForm.measuresEn);
+            fd.append("price", this.packagesForm.price || "");
+            fd.append(
+              "priceAfterDiscount",
+              this.packagesForm.priceAfterDiscount || ""
+            );
+            await this.$axios.post("/packages", fd);
             // Reset
-            // this.packagesForm = {
-            //   image: null,
-            //   measuresAr: [],
-            //   measuresEn: [],
-            // };
-            // this.selectedImage = null;
-            // this.selectedImageUrl = null;
-            // this.toggleModal();
-            // await this.getPackages();
+            this.packagesForm = {
+              image: null,
+              measuresAr: [],
+              measuresEn: [],
+            };
+            this.selectedImage = null;
+            this.selectedImageUrl = null;
+            this.toggleModal();
+            await this.getPackages();
           } catch (error) {
             console.log(error);
           } finally {
