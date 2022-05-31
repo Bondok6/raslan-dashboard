@@ -3,7 +3,7 @@
     <UIAddButton @click="toggleModal" buttonText="اضافة باقة" />
 
     <!-- Search -->
-    <div class="search w-50">
+    <div class="search w-50" v-if="!modalTrigger">
       <img
         src="@/assets/imgs/orders/search.png"
         alt="search icon"
@@ -14,50 +14,65 @@
 
     <!-- Add Package -->
     <div class="mt-3" v-if="modalTrigger">
-      <el-form ref="form" :model="form">
+      <el-form
+        :rules="packagesFormRules"
+        :model="packagesForm"
+        ref="packagesForm"
+      >
         <div class="row">
-          <el-form-item class="col-lg-4 col-md-12">
-            <el-upload
-              class="upload-demo"
-              drag
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :file-list="fileList"
-              multiple
+          <el-form-item label=" " prop="image" class="col-lg-4 col-md-12">
+            <label for="formFile" class="form-label"
+              >أضف الايقون التي تعبر عن الباقة</label
             >
-              <i class="el-icon-upload"></i>
-              <div class="el-upload__text">
-                أضف الصورة الخاصة بالباقة او
-                <em>اضغط للتحميل</em>
-              </div>
-            </el-upload>
+            <input
+              class="form-control"
+              type="file"
+              id="formFile"
+              @change="onImageSeclected"
+              accept="image/png, image/jpeg"
+            />
+            <div class="text-center m-2">
+              <img
+                :src="selectedImageUrl"
+                alt="preview"
+                v-if="selectedImageUrl"
+                width="150"
+                height="100"
+              />
+            </div>
           </el-form-item>
 
           <div class="col-lg-8 row">
-            <el-form-item label=" " class="col-lg-6 col-md-12">
+            <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleAr">
               <span>اسم الباقة باللغة العربية</span>
               <el-input
-                v-model="input"
+                v-model="packagesForm.titleAr"
                 placeholder="اكتب اسم الباقة باللغة العربية"
               ></el-input>
             </el-form-item>
 
-            <el-form-item label=" " class="col-lg-6 col-md-12">
+            <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleEn">
               <span>اسم الباقة باللغة الانجليزية</span>
               <el-input
-                v-model="input"
+                v-model="packagesForm.titleEn"
                 placeholder="كتب اسم الباقة باللغة الانجليزية"
               ></el-input>
             </el-form-item>
-            <el-form-item class="col-lg-12">
+
+            <el-form-item class="col-lg-12" prop="branches">
               <span>اختر الفروع التي ينتمى اليها</span>
-              <el-select v-model="caseInput" placeholder="الفروع" class="w-100">
+              <el-select
+                v-model="packagesForm.branches"
+                placeholder="الفروع"
+                class="w-100"
+                multiple
+              >
                 <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="branch in allBranches"
+                  :key="branch.id"
+                  :label="branch.city.nameAr + ', ' + branch.titleAr"
+                  :value="branch.id"
+                  class="text-center"
                 >
                 </el-option>
               </el-select>
@@ -65,74 +80,120 @@
           </div>
         </div>
         <div class="row">
-          <el-form-item label=" " class="col-lg-4 col-md-12">
+          <el-form-item
+            label=" "
+            class="col-lg-4 col-md-12"
+            prop="priceAfterDiscount"
+          >
             <span>السعر النهائي</span>
-            <el-input v-model="input" placeholder="اكتب السعر"></el-input>
+            <el-input
+              v-model="packagesForm.priceAfterDiscount"
+              placeholder="اكتب السعر"
+            ></el-input>
           </el-form-item>
 
-          <el-form-item label=" " class="col-lg-4 col-md-12">
+          <el-form-item label=" " class="col-lg-4 col-md-12" prop="pice">
             <span>السعر قبل الخصم</span>
-            <el-input v-model="input" placeholder="اكتب السعر"></el-input>
+            <el-input
+              v-model="packagesForm.price"
+              placeholder="اكتب السعر"
+            ></el-input>
           </el-form-item>
 
-          <el-form-item class="col-lg-4 col-md-12">
+          <el-form-item class="col-lg-4 col-md-12" prop="availableAt">
             <span>مكان الحجز</span>
             <el-select
-              v-model="caseInput"
+              v-model="packagesForm.availableAt"
               placeholder="اختر مكان الحجز"
               class="w-100"
+              @change="getTests(packagesForm.availableAt)"
             >
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="[key, val] of Object.entries(locations)"
+                :key="key"
+                :label="val"
+                :value="key"
+                class="text-center"
               >
               </el-option>
             </el-select>
           </el-form-item>
         </div>
         <div class="row">
-          <el-form-item class="col-lg-12">
-            <span>التحاليل التي تتكون منهاالباقة</span>
+          <el-form-item class="col-lg-12" prop="tests">
+            <span>التحاليل التي تتكون منها الباقة</span>
             <el-select
-              v-model="caseInput"
+              v-model="packagesForm.tests"
               placeholder="اختر التحاليل المناسبة"
               class="w-100"
+              multiple
             >
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="test in tests"
+                :key="test.id"
+                :label="test.titleAr"
+                :value="test.id"
+                class="text-center"
               >
               </el-option>
             </el-select>
           </el-form-item>
         </div>
         <div class="row">
-          <el-form-item label=" " class="col-lg-4 col-md-12">
+          <el-form-item label=" " class="col-lg-8 col-md-12" prop="measuresAr">
             <span>الإجراءات الازمة باللغة العربية</span>
-            <el-input
-              v-model="input"
-              placeholder="اكتب الإجراءات الازمة باللغة العربية"
-            ></el-input>
+            <div class="d-flex gap-3">
+              <el-input
+                v-model="measuresAr"
+                placeholder="اكتب الإجراء اللازم باللغة العربية ثم اضغط علي زر (اضافة) وقم بكتابه اجراء اخر اذا وجد"
+              ></el-input>
+              <button
+                type="button"
+                @click="addMeasureAr(measuresAr)"
+                class="primary-btn px-3 d-flex gap-2"
+              >
+                اضافة
+                <span class="badge bg-white purple-text">{{
+                  this.packagesForm.measuresAr.length
+                }}</span>
+              </button>
+            </div>
           </el-form-item>
         </div>
         <div class="row">
-          <el-form-item label=" " class="col-lg-4 col-md-12">
+          <el-form-item label=" " class="col-lg-8 col-md-12" prop="measuresEn">
             <span>الإجراءات الازمة باللغة الانجليزية</span>
-            <el-input
-              v-model="input"
-              placeholder="اكتب الإجراءات الازمة باللغة الانجليزية"
-            ></el-input>
+            <div class="d-flex gap-3">
+              <el-input
+                v-model="measuresEn"
+                placeholder="اكتب الإجراء اللازم باللغة الانجليزية ثم اضغط علي زر (اضافة) وقم بكتابه اجراء اخر اذا وجد"
+              ></el-input>
+              <button
+                type="button"
+                @click="addMeasureEn(measuresEn)"
+                class="primary-btn px-3 d-flex gap-2"
+              >
+                اضافة
+                <span class="badge bg-white purple-text">{{
+                  this.packagesForm.measuresEn.length
+                }}</span>
+              </button>
+            </div>
           </el-form-item>
         </div>
         <div class="buttons w-100 p-3 d-flex gap-2 justify-content-end">
-          <button type="submit" class="secondary-btn w-25 align-self-end">
+          <button
+            type="submit"
+            class="secondary-btn w-25 align-self-end"
+            @click.prevent="addPackage"
+          >
             حفظ
           </button>
-          <button type="submit" class="secondary-btn w-25 align-self-end">
+          <button
+            type="submit"
+            class="secondary-btn w-25 align-self-end"
+            @click.prevent="cancel"
+          >
             الغاء
           </button>
         </div>
@@ -224,19 +285,51 @@ export default {
   data() {
     return {
       modalTrigger: false,
+      selectedImage: null,
+      selectedImageUrl: null,
       searchInput: "",
-      input: "",
       packages: [],
       page: 1,
       totalPages: 1,
+      locations: {
+        home: "في المنزل فقط",
+        lab: "في المعمل فقط",
+        both: "في المنزل او المعمل",
+      },
+      packagesForm: {
+        image: null,
+        measuresAr: [],
+        measuresEn: [],
+      },
+      packagesFormRules: {
+        titleAr: [{ required: true, message: "Arabic title Is Required" }],
+        titleEn: [{ required: true, message: "English title Is Required" }],
+        availableAt: [{ required: true, message: "Location Is Required" }],
+        branches: [{ required: true, message: "Branches Is Required" }],
+        image: [{ required: true, message: "Icon Is Required" }],
+        measuresAr: [{ required: true, message: "This field Is Required" }],
+        measuresEn: [{ required: true, message: "This field Is Required" }],
+        tests: [{ required: true, message: "This field Is Required" }],
+      },
+      allBranches: [],
+      tests: [],
+      measuresAr: "",
+      measuresEn: "",
     };
   },
   async fetch() {
     await this.getPackages();
+    await this.getAllBranches();
   },
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    onImageSeclected(e) {
+      if (e.target.files.length > 0) {
+        this.selectedImage = this.packagesForm.image = e.target.files[0];
+        this.selectedImageUrl = URL.createObjectURL(this.selectedImage);
+      }
     },
     async getPackages() {
       let params = { page: this.page };
@@ -244,6 +337,15 @@ export default {
       this.packages = await packagesRes.data.docs;
       this.totalPages = await packagesRes.data.totalPages;
       this.page = await packagesRes.data.page;
+    },
+    async getAllBranches() {
+      const branchesRes = await this.$axios.get("/branches");
+      this.allBranches = await branchesRes.data.docs;
+    },
+    async getTests(location) {
+      const testsRes = await this.$axios.get(`/tests?availableAt=${location}`);
+      this.tests = await testsRes.data.docs;
+      console.log(this.tests);
     },
     deletePackage(pack) {
       this.$confirm(
@@ -269,6 +371,56 @@ export default {
             message: "Delete canceled",
           });
         });
+    },
+    addMeasureAr(measure) {
+      if (!measure) return;
+      this.packagesForm.measuresAr.push(measure);
+      this.measuresAr = "";
+    },
+    addMeasureEn(measure) {
+      if (!measure) return;
+      this.packagesForm.measuresEn.push(measure);
+      this.measuresEn = "";
+    },
+    addPackage() {
+      this.$refs.packagesForm.validate(async (valid) => {
+        if (valid) {
+          if (!this.selectedImage) return;
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            console.log(this.packagesForm);
+            // Reset
+            // this.packagesForm = {
+            //   image: null,
+            //   measuresAr: [],
+            //   measuresEn: [],
+            // };
+            // this.selectedImage = null;
+            // this.selectedImageUrl = null;
+            // this.toggleModal();
+            // await this.getPackages();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
+    },
+    cancel() {
+      this.packagesForm = {
+        image: null,
+        measuresAr: [],
+        measuresEn: [],
+      };
+      this.selectedImage = null;
+      this.selectedImageUrl = null;
+      this.toggleModal();
     },
   },
   computed: {

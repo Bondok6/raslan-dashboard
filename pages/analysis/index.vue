@@ -3,7 +3,7 @@
     <UIAddButton @click="toggleModal" buttonText="اضافة تحليل" />
 
     <!-- Search -->
-    <div class="search w-50">
+    <div class="search w-50" v-if="!modalTrigger">
       <img
         src="@/assets/imgs/orders/search.png"
         alt="search icon"
@@ -288,8 +288,6 @@ export default {
       selectedImage: null,
       selectedImageUrl: null,
       searchInput: "",
-      selectedImage: null,
-      selectedImageUrl: null,
       analysisForm: {
         icon: null,
         possibleResults: [
