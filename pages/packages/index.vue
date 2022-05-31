@@ -345,7 +345,6 @@ export default {
     async getTests(location) {
       const testsRes = await this.$axios.get(`/tests?availableAt=${location}`);
       this.tests = await testsRes.data.docs;
-      console.log(this.tests);
     },
     deletePackage(pack) {
       this.$confirm(

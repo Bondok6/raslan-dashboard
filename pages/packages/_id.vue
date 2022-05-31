@@ -61,27 +61,28 @@
           <li class="key">{{ branch.titleAr }}, {{ branch.region.nameAr }}</li>
         </ul>
       </div>
-      <!-- <div>
-        <h5 class="purple-text py-2">النتايج المحتملة</h5>
-        <ul
-          class="px-3"
-          v-for="(result, index) in possibleResults"
-          :key="index"
-        >
-          <li>
-            <h6>{{ pack.titleAr }}</h6>
-            <p class="key">{{ pack.descriptionAr }}</p>
-          </li>
+      <div>
+        <h5 class="purple-text py-2">التحاليل التي تتكون منها الباقة</h5>
+        <ul v-for="test in pack.tests" :key="test.id" class="list-inline px-3">
+          <li class="key">{{ test.titleAr }}</li>
         </ul>
-      </div> -->
+      </div>
       <div>
         <h5 class="purple-text py-2">الاجراءات الازمة</h5>
         <ul
           class="list-inline"
-          v-for="measure in pack.measuresAr"
-          :key="measure"
+          v-for="(measure, index) in pack.measuresAr"
+          :key="index"
         >
-          <li class="key">{{ measure }}</li>
+          <li
+            class="key"
+            v-if="
+              pack.measuresAr.length === 1 ||
+              index !== pack.measuresAr.length - 1
+            "
+          >
+            {{ measure }}
+          </li>
         </ul>
       </div>
     </div>
