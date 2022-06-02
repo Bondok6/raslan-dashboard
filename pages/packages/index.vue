@@ -251,7 +251,11 @@
         </div>
         <div>
           <div class="options">
-            <img src="@/assets/imgs/edit-icon.png" alt="edit icon" />
+            <img
+              src="@/assets/imgs/edit-icon.png"
+              alt="edit icon"
+              @click="$router.push(`/packages/${pack.id}`)"
+            />
             <img
               src="@/assets/imgs/delete-icon.png"
               alt="delete icon"

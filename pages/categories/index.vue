@@ -227,7 +227,7 @@ export default {
             this.selectedImage = null;
             this.selectedImageUrl = null;
             this.toggleModal();
-            this.getCategories();
+            await this.getCategories();
           } catch (error) {
             console.log(error);
           } finally {

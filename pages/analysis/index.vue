@@ -250,7 +250,7 @@
             <img
               src="@/assets/imgs/edit-icon.png"
               alt="edit icon"
-              @click="toggleEditModal(test.id)"
+              @click="$router.push(`/analysis/${test.id}`)"
             />
             <img
               src="@/assets/imgs/delete-icon.png"
@@ -338,10 +338,6 @@ export default {
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
-    },
-    toggleEditModal(testId) {
-      this.editModalTrigger = !this.editModalTrigger;
-      this.targetId = testId;
     },
     onImageSeclected(e) {
       if (e.target.files.length > 0) {
