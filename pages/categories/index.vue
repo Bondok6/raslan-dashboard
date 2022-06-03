@@ -126,7 +126,11 @@
         v-for="category in filteredCategories"
         :key="category.id"
       >
-        <div class="d-flex align-items-center gap-3">
+        <div
+          class="d-flex align-items-center gap-3"
+          @click="$router.push(`/articles`)"
+          role="button"
+        >
           <img :src="category.image" alt="category icon" width="70" />
           <h6>{{ category.titleAr }}</h6>
         </div>
