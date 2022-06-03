@@ -2,7 +2,8 @@
   <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة مقالة" />
 
-    <div class="search w-50" v-if="!modalTrigger">
+    <!-- Search -->
+    <div class="search w-50" v-if="!modalTrigger" v-show="!editModalTrigger">
       <img
         src="@/assets/imgs/orders/search.png"
         alt="search icon"
@@ -11,6 +12,7 @@
       <el-input placeholder="ابحث في المقالات" v-model="searchInput"></el-input>
     </div>
 
+    <!-- Add Article -->
     <div class="mt-3" v-if="modalTrigger">
       <el-form :rules="topicFormRules" :model="topicForm" ref="topicForm">
         <div class="row">
@@ -37,7 +39,7 @@
           </el-form-item>
 
           <div class="col-lg-8 row">
-            <el-form-item class="col-lg-12">
+            <el-form-item class="col-lg-12" prop="category">
               <span>اختر الفئة التي تنتمى اليها المقالة</span>
               <el-select
                 v-model="topicForm.category"
@@ -54,7 +56,7 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label=" " class="col-lg-6 col-md-12">
+            <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleAr">
               <span>اسم المقالة باللغة العربية</span>
               <el-input
                 v-model="topicForm.titleAr"
@@ -62,7 +64,7 @@
               ></el-input>
             </el-form-item>
 
-            <el-form-item label=" " class="col-lg-6 col-md-12">
+            <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleEn">
               <span>اسم المقالة باللغة الانجليزية</span>
               <el-input
                 v-model="topicForm.titleEn"
@@ -110,6 +112,107 @@
       </el-form>
     </div>
 
+    <!-- Update Article -->
+    <div class="mt-3" v-if="editModalTrigger">
+      <el-form :rules="topicFormRules" :model="editTopicForm" ref="topicForm">
+        <div class="row">
+          <el-form-item label=" " prop="image" class="col-lg-4 col-md-12">
+            <label for="formFile" class="form-label"
+              >أضف الصورة الخاصة للمقالة</label
+            >
+            <input
+              class="form-control"
+              type="file"
+              id="formFile"
+              @change="onImageSeclected"
+              accept="image/png, image/jpeg"
+            />
+            <div class="text-center m-2">
+              <img
+                :src="selectedImageUrl"
+                alt="preview"
+                v-if="selectedImageUrl"
+                width="150"
+                height="100"
+              />
+            </div>
+          </el-form-item>
+
+          <div class="col-lg-8 row">
+            <el-form-item class="col-lg-12" prop="category">
+              <span>اختر الفئة التي تنتمى اليها المقالة</span>
+              <el-select
+                v-model="editTopicForm.category"
+                placeholder="اختر الفئات المناسبة"
+                class="w-100"
+              >
+                <el-option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :label="category.titleAr"
+                  :value="category.id"
+                  class="text-center"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleAr">
+              <span>اسم المقالة باللغة العربية</span>
+              <el-input
+                v-model="editTopicForm.titleAr"
+                placeholder="اكتب اسم المقالة باللغة العربية"
+              ></el-input>
+            </el-form-item>
+
+            <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleEn">
+              <span>اسم المقالة باللغة الانجليزية</span>
+              <el-input
+                v-model="editTopicForm.titleEn"
+                placeholder="كتب اسم المقالة باللغة الانجليزية"
+              ></el-input>
+            </el-form-item>
+          </div>
+        </div>
+
+        <el-form-item label=" " prop="descriptionAr">
+          <span>وصف المقالة باللغة العربية</span>
+          <el-input
+            type="textarea"
+            :rows="4"
+            v-model="editTopicForm.descriptionAr"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label=" " prop="descriptionEn">
+          <span>وصف المقالة باللغة الانجليزية</span>
+          <el-input
+            dir="ltr"
+            type="textarea"
+            :rows="4"
+            v-model="editTopicForm.descriptionEn"
+          ></el-input>
+        </el-form-item>
+
+        <div class="buttons w-100 p-3 d-flex gap-2 justify-content-end">
+          <button
+            type="submit"
+            class="secondary-btn w-25 align-self-end"
+            @click.prevent="editTopic"
+          >
+            حفظ التغييرات
+          </button>
+          <button
+            type="submit"
+            class="secondary-btn w-25 align-self-end"
+            @click.prevent="cancel"
+          >
+            الغاء
+          </button>
+        </div>
+      </el-form>
+    </div>
+
+    <!-- No Articles -->
     <UIEmpty
       v-if="topics.length < 1"
       imgSrc="articles/no-articles.png"
@@ -117,14 +220,21 @@
       caption="قم بإضافة المقالات  التي تنتمى الى هذه الفئة"
     />
 
-    <div class="cards" v-if="!modalTrigger">
+    <!-- Articles -->
+    <div class="cards" v-if="!modalTrigger" v-show="!editModalTrigger">
       <div
         class="card-item d-flex align-items-center justify-content-around my-2"
         v-for="topic in filteredTopics"
         :key="topic.id"
       >
         <div class="d-flex flex-wrap gap-2 align-items-center">
-          <h6 class="key">{{ topic.titleAr }}</h6>
+          <h6
+            class="key"
+            @click="$router.push(`/articles/${topic.id}`)"
+            role="button"
+          >
+            {{ topic.titleAr }}
+          </h6>
           <h6 class="value">
             {{ topic.descriptionAr.split(/\s+/).slice(0, 20).join(" ") }} ...
           </h6>
@@ -133,7 +243,7 @@
           <img
             src="@/assets/imgs/edit-icon.png"
             alt="edit icon"
-            @click="editTopic(topic)"
+            @click="toggleEditModal(topic.id)"
             role="button"
           />
           <img
@@ -153,6 +263,7 @@ export default {
   data() {
     return {
       modalTrigger: false,
+      editModalTrigger: false,
       searchInput: "",
       topicForm: {
         image: null,
@@ -166,6 +277,10 @@ export default {
         descriptionEn: [
           { required: true, message: "Arabic description Is Required" },
         ],
+        category: [{ required: true, message: "Category Is Required" }],
+      },
+      editTopicForm: {
+        image: null,
       },
       selectedImage: null,
       selectedImageUrl: null,
@@ -173,6 +288,7 @@ export default {
       topics: [],
       totalPages: 1,
       page: 1,
+      targetId: null,
     };
   },
   async fetch() {
@@ -182,6 +298,14 @@ export default {
   methods: {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
+    },
+    async toggleEditModal(topicId) {
+      const topicRes = await this.$axios.get(`/topics/${topicId}`);
+      this.editTopicForm = { ...topicRes.data };
+      this.selectedImage = topicRes.data.image;
+      this.selectedImageUrl = topicRes.data.image;
+      this.editModalTrigger = !this.editModalTrigger;
+      this.targetId = topicId;
     },
     onImageSeclected(e) {
       if (e.target.files.length > 0) {
@@ -241,9 +365,13 @@ export default {
       this.topicForm = {
         image: null,
       };
+      this.edittopicForm = {
+        image: null,
+      };
       this.selectedImage = null;
       this.selectedImageUrl = null;
-      this.toggleModal();
+      this.modalTrigger = false;
+      this.editModalTrigger = false;
     },
     deleteTopic(topic) {
       this.$confirm(
@@ -269,6 +397,40 @@ export default {
             message: "Delete canceled",
           });
         });
+    },
+    editTopic() {
+      this.$refs.topicForm.validate(async (valid) => {
+        if (valid) {
+          if (!this.selectedImage) {
+            return;
+          }
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            const fd = new FormData();
+            fd.append("titleAr", this.editTopicForm.titleAr);
+            fd.append("titleEn", this.editTopicForm.titleEn);
+            fd.append("image", this.editTopicForm.image);
+            fd.append("descriptionAr", this.editTopicForm.descriptionAr);
+            fd.append("descriptionEn", this.editTopicForm.descriptionEn);
+            await this.$axios.patch(`/topics/${this.targetId}`, fd);
+            // Reset
+            this.editTopicForm = {};
+            this.selectedImage = null;
+            this.selectedImageUrl = null;
+            this.editModalTrigger = false;
+            await this.getTopics();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
   },
   computed: {
