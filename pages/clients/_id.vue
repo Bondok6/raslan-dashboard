@@ -31,18 +31,21 @@
           <span>اسم التحليل باللغة الانجليزية</span>
           <el-input
             v-model="resultForm.titleEn"
-            placeholder="اكتب اسم التحليل باللغة الانجليزية"
+            placeholder="Analysis Name in English"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 
         <el-form-item label=" " prop="attachment">
-          <label for="formFile" class="form-label">اختر نتيجة التحليل</label>
+          <label for="formFile" class="form-label">
+            اختر نتيجة التحليل ( PDF, Image )</label
+          >
           <input
             class="form-control"
             type="file"
             id="formFile"
             @change="onFileSelected"
-            accept=""
+            accept="image/*,.pdf"
           />
         </el-form-item>
 
@@ -69,7 +72,7 @@
         ref="editResultForm"
       >
         <el-form-item label=" " prop="titleAr">
-          <span> اسم التحليل باللغة العربية </span>
+          <span> اسم التحليل الجديد باللغة العربية </span>
           <el-input
             v-model="editResultForm.titleAr"
             placeholder="اكتب اسم التحليل باللغة العربية"
@@ -77,7 +80,7 @@
         </el-form-item>
 
         <el-form-item label=" " prop="titleEn">
-          <span>اسم التحليل باللغة الانجليزية</span>
+          <span>اسم التحليل الجديد باللغة الانجليزية</span>
           <el-input
             v-model="editResultForm.titleEn"
             placeholder="اكتب اسم التحليل باللغة الانجليزية"
@@ -85,7 +88,9 @@
         </el-form-item>
 
         <el-form-item label=" " prop="attachment">
-          <label for="formFile" class="form-label">اختر نتيجة التحليل</label>
+          <label for="formFile" class="form-label">
+            اختر نتيجة التحليل الجديدة</label
+          >
           <input
             class="form-control"
             type="file"
@@ -161,8 +166,8 @@ export default {
     return {
       modalTrigger: false,
       editModalTrigger: false,
-      editResultForm: { attachment: null },
       resultForm: { attachment: null },
+      editResultForm: {},
       resultFormRules: {
         titleAr: [{ required: true, message: "This Field Is Required" }],
         titleEn: [{ required: true, message: "This Field Is Required" }],

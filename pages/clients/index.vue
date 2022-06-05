@@ -87,6 +87,7 @@
           <el-input
             v-model="editClientForm.phone"
             placeholder="اكتب رقم الهاتف الخاص بالعميل"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 
