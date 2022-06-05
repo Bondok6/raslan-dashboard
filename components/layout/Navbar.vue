@@ -7,7 +7,7 @@
       </div>
 
       <div class="navbar-actions d-flex justify-content-between gap-3">
-        <div class="d-flex gap-2">
+        <!-- <div class="d-flex gap-2">
           <div>
             <img src="@/assets/imgs/navbar/search.svg" alt="search" />
           </div>
@@ -18,7 +18,7 @@
               alt="notifications"
             />
           </div>
-        </div>
+        </div> -->
 
         <div>Arabic</div>
 

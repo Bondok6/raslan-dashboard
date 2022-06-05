@@ -23,9 +23,11 @@
             </el-form-item>
           </el-form>
 
-          <nuxt-link to="/signup" class="text-center orange-text"
-            >انشاء حساب جديد</nuxt-link
-          >
+          <div class="text-center mb-3">
+            <nuxt-link to="/signup" class="orange-text"
+              >انشاء حساب جديد</nuxt-link
+            >
+          </div>
 
           <div>
             <button
@@ -68,6 +70,7 @@ export default {
           });
           try {
             await this.$auth.loginWith("local", { data: this.loginForm });
+            this.$router.push("/");
           } catch (error) {
             this.errorMsg = true;
           } finally {

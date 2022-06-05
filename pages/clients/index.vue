@@ -131,7 +131,7 @@
           </div>
           <div class="d-flex gap-3 align-items-center">
             <h6 class="key">رقم الهاتف</h6>
-            <h6 class="value" dir="ltr">{{ client.phone.substring(2) }}</h6>
+            <h6 class="value" dir="ltr">{{ client.phone }}</h6>
           </div>
         </div>
         <div class="d-flex flex-column">
@@ -228,7 +228,6 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            this.clientsForm.phone = "+2" + this.clientsForm.phone;
             await this.$axios.post("/add-client", this.clientsForm);
             this.clientsForm = {};
             this.toggleModal();

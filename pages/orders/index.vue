@@ -19,9 +19,6 @@
         <span class="calender" @click="toggleCalender">
           <img src="@/assets/imgs/orders/calender.png" alt="calender icon" />
         </span>
-        <span class="option">
-          <img src="@/assets/imgs/orders/options.png" alt="options icon" />
-        </span>
       </div>
     </div>
 
@@ -49,59 +46,6 @@
         </el-form-item>
       </el-form>
     </UIPopupForm>
-
-    <!-- <UIPopupForm
-      v-if="modalTrigger"
-      :modalTrigger="modalTrigger"
-      @update:modalTrigger="toggleModal"
-    >
-      <el-form v-if="showFilter" class="p-5">
-        <el-form-item>
-          <label class="d-block">اختر الحالة</label>
-          <el-select v-model="caseInput" placeholder="اختر الحالة">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item>
-          <label>مكان الحجز</label>
-          <el-input v-model="input"></el-input>
-        </el-form-item>
-
-        <el-form-item label=" ">
-          <label class="d-block">اختر الفترة الزمنية</label>
-          <el-time-select
-            placeholder="من"
-            v-model="startTime"
-            :picker-options="{
-              start: '08:30',
-              step: '00:15',
-              end: '18:30',
-            }"
-          >
-          </el-time-select>
-          <el-time-select
-            placeholder="الى"
-            v-model="endTime"
-            :picker-options="{
-              start: '08:30',
-              step: '00:15',
-              end: '18:30',
-              minTime: startTime,
-            }"
-          >
-          </el-time-select>
-        </el-form-item>
-      </el-form>
-
-      <button class="secondary-btn w-50 mb-2 me-4">تأكيد</button>
-    </UIPopupForm> -->
 
     <!-- Orders -->
     <div class="cards mt-3">

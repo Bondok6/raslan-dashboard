@@ -52,7 +52,7 @@
 <script>
 export default {
   layout: "full-page",
-
+  auth: false,
   data() {
     return {
       errorMsg: false,
