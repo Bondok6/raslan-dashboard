@@ -2,14 +2,41 @@
   <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة مقالة" />
 
-    <!-- Search -->
-    <div class="search w-50" v-if="!modalTrigger" v-show="!editModalTrigger">
-      <img
-        src="@/assets/imgs/orders/search.png"
-        alt="search icon"
-        class="search__icon"
-      />
-      <el-input placeholder="ابحث في المقالات" v-model="searchInput"></el-input>
+    <!-- Search & Filter -->
+    <div class="d-flex flex-wrap gap-2">
+      <!-- Search -->
+      <div class="search w-50" v-if="!modalTrigger" v-show="!editModalTrigger">
+        <img
+          src="@/assets/imgs/orders/search.png"
+          alt="search icon"
+          class="search__icon"
+        />
+        <el-input
+          placeholder="ابحث في المقالات"
+          v-model="searchInput"
+        ></el-input>
+      </div>
+
+      <!-- Filter by Category -->
+      <el-form class="col-lg-4 col-sm-8">
+        <el-form-item>
+          <el-select
+            v-model="categoryFilter"
+            @change="filterByCategory"
+            placeholder="حدد المقالات باختيار الفئة المناسبة"
+            class="w-100"
+          >
+            <el-option
+              v-for="category in categories"
+              :key="category.id"
+              :label="category.titleAr"
+              :value="category.id"
+              class="text-center"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
     </div>
 
     <!-- Add Article -->
@@ -289,6 +316,7 @@ export default {
       totalPages: 1,
       page: 1,
       targetId: null,
+      categoryFilter: "",
     };
   },
   async fetch() {
@@ -431,6 +459,16 @@ export default {
           }
         }
       });
+    },
+    async filterByCategory() {
+      let params = { page: this.page };
+      const topicsRes = await this.$axios.get(
+        `/topics?category=${this.categoryFilter}`,
+        { params }
+      );
+      this.topics = await topicsRes.data.docs;
+      this.totalPages = await topicsRes.data.totalPages;
+      this.page = await topicsRes.data.page;
     },
   },
   computed: {

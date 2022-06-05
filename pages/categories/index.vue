@@ -76,11 +76,11 @@
     <UIPopupForm
       v-if="editModalTrigger"
       :modalTrigger="editModalTrigger"
-      @update:modalTrigger="toggleEditModal"
+      @update:modalTrigger="closeEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column gap-2"
-        :rules="editCategoryRules"
+        :rules="categoriesFormRules"
         :model="editCategoryForm"
         ref="editCategoryForm"
       >
@@ -154,6 +154,7 @@
     <!-- Pagination -->
     <el-pagination
       class="position-fixed bottom-0"
+      v-if="totalPages > 1"
       background
       layout="prev, pager, next"
       :current-page.sync="page"
@@ -181,10 +182,6 @@ export default {
         titleEn: [{ required: true, message: "English title Is Required" }],
       },
       editCategoryForm: {},
-      editCategoryRules: {
-        titleAr: [{ required: true, message: "Arabic title Is Required" }],
-        titleEn: [{ required: true, message: "English title Is Required" }],
-      },
       categories: [],
       page: 1,
       totalPages: 1,
@@ -197,9 +194,14 @@ export default {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
     },
-    toggleEditModal(doctorId) {
+    closeEditModal() {
       this.editModalTrigger = !this.editModalTrigger;
-      this.targetId = doctorId;
+    },
+    async toggleEditModal(categoryId) {
+      const categoryRes = await this.$axios.get(`/category/${categoryId}`);
+      this.editCategoryForm = { ...categoryRes.data };
+      this.editModalTrigger = !this.editModalTrigger;
+      this.targetId = categoryId;
     },
     onImageSeclected(e) {
       if (e.target.files.length > 0) {
@@ -288,7 +290,7 @@ export default {
             );
             // Reset
             this.editCategoryForm = {};
-            this.toggleEditModal();
+            this.closeEditModal();
             await this.getCategories();
           } catch (error) {
             console.log(error);

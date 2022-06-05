@@ -157,15 +157,15 @@ export default {
         ],
         category: [{ required: true, message: "Category Is Required" }],
       },
-      editTopicForm: {
-        image: null,
-      },
+      editTopicForm: {},
       selectedImage: null,
       selectedImageUrl: null,
+      categories: [],
     };
   },
   async fetch() {
     await this.getTopic();
+    await this.getCategories();
   },
   methods: {
     toggleEditModal() {
@@ -173,18 +173,20 @@ export default {
     },
     onImageSeclected(e) {
       if (e.target.files.length > 0) {
-        this.selectedImage = this.topicForm.image = e.target.files[0];
+        this.selectedImage = this.editTopicForm.image = e.target.files[0];
         this.selectedImageUrl = URL.createObjectURL(this.selectedImage);
       }
     },
-
     async getTopic() {
       const topicRes = await this.$axios.get(
         `/topics/${this.$route.params.id}`
       );
       this.topic = await topicRes.data;
     },
-
+    async getCategories() {
+      const categoriesRes = await this.$axios.get("/category");
+      this.categories = await categoriesRes.data.docs;
+    },
     deleteTopic(topic) {
       this.$confirm(
         `Are you sure you want to delete this article ${topic.titleAr}`,
@@ -210,7 +212,6 @@ export default {
           });
         });
     },
-
     async toggleEditModal() {
       const topicRes = await this.$axios.get(
         `/topics/${this.$route.params.id}`
@@ -220,7 +221,6 @@ export default {
       this.selectedImageUrl = topicRes.data.image;
       this.editModalTrigger = !this.editModalTrigger;
     },
-
     editTopic() {
       this.$refs.topicForm.validate(async (valid) => {
         if (valid) {
@@ -255,7 +255,6 @@ export default {
         }
       });
     },
-
     cancel() {
       this.edittopicForm = {
         image: null,
