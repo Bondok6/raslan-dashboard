@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!$fetchState.pending">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة منطقة" />
 
     <!-- Add Region -->
@@ -16,7 +16,11 @@
       >
         <el-form-item prop="city">
           <span class="d-block">اختر المحافظة</span>
-          <el-select v-model="regionForm.city" placeholder="المحافظة">
+          <el-select
+            v-model="regionForm.city"
+            placeholder="المحافظة"
+            prop="city"
+          >
             <el-option
               v-for="city in allCities"
               :key="city.id"
@@ -33,12 +37,12 @@
             placeholder="اكتب اسم المنطقة باللغة العربية"
           ></el-input>
         </el-form-item>
-
         <el-form-item label=" " prop="nameEn">
           <span>المنطقة باللغة الانجليزية</span>
           <el-input
             v-model="regionForm.nameEn"
-            placeholder="اكتب اسم المنطقة باللغة الانجليزية"
+            placeholder="Enter the name of the region in English"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 
@@ -52,11 +56,11 @@
     <UIPopupForm
       v-if="editModalTrigger"
       :modalTrigger="editModalTrigger"
-      @update:modalTrigger="toggleEditModal"
+      @update:modalTrigger="closeEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column gap-2"
-        :rules="editRegionFormRules"
+        :rules="regionFormRules"
         :model="editRegionForm"
         ref="editRegionForm"
       >
@@ -72,7 +76,8 @@
           <span>المنطقة باللغة الانجليزية</span>
           <el-input
             v-model="editRegionForm.nameEn"
-            placeholder="اكتب اسم المنطقة الجديد باللغة الانجليزية"
+            placeholder="Enter the name of the new region in English"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 
@@ -125,6 +130,7 @@
     <!-- Pagination -->
     <el-pagination
       class="position-fixed bottom-0"
+      v-if="totalPages > 1"
       background
       layout="prev, pager, next"
       :current-page.sync="page"
@@ -143,13 +149,9 @@ export default {
       editModalTrigger: false,
       allCities: [],
       regionForm: {},
+      editRegionForm: {},
       regionFormRules: {
         city: [{ required: true, message: "City Is Required" }],
-        nameAr: [{ required: true, message: "Arabic name Is Required" }],
-        nameEn: [{ required: true, message: "English name Is Required" }],
-      },
-      editRegionForm: {},
-      editRegionFormRules: {
         nameAr: [{ required: true, message: "Arabic name Is Required" }],
         nameEn: [{ required: true, message: "English name Is Required" }],
       },
@@ -168,7 +170,12 @@ export default {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
     },
-    toggleEditModal(regionId) {
+    closeEditModal() {
+      this.editModalTrigger = !this.editModalTrigger;
+    },
+    async toggleEditModal(regionId) {
+      const regionRes = await this.$axios.get(`/region/${regionId}`);
+      this.editRegionForm = { ...regionRes.data };
       this.editModalTrigger = !this.editModalTrigger;
       this.targetId = regionId;
     },
@@ -250,7 +257,7 @@ export default {
             );
             // Reset
             this.editRegionForm = {};
-            this.toggleEditModal();
+            this.closeEditModal();
             await this.getAllRegions();
           } catch (error) {
             console.log(error);

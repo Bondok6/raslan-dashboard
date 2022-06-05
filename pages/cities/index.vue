@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!$fetchState.pending">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة محافظة" />
 
     <!-- Add City -->
