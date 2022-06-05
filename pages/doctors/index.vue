@@ -100,14 +100,35 @@
     <UIPopupForm
       v-if="editModalTrigger"
       :modalTrigger="editModalTrigger"
-      @update:modalTrigger="toggleEditModal"
+      @update:modalTrigger="closeEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column gap-2"
-        :rules="editTeamFormRules"
+        :rules="teamFormRules"
         :model="editTeamForm"
         ref="editTeamForm"
       >
+        <el-form-item label=" " prop="image">
+          <label for="formFile" class="form-label"
+            >أضف الصورة الخاصة بدكتور المعمل</label
+          >
+          <input
+            class="form-control"
+            type="file"
+            id="formFile"
+            @change="onImageSeclected"
+            accept="image/png, image/jpeg"
+          />
+          <div class="text-center m-2">
+            <img
+              :src="selectedImageUrl"
+              alt="preview"
+              v-if="selectedImageUrl"
+              width="150"
+              height="100"
+            />
+          </div>
+        </el-form-item>
         <div class="d-flex gap-2">
           <el-form-item label=" " prop="nameAr">
             <span> اسم الطبيب الجديد باللغة العربية </span>
@@ -180,6 +201,7 @@
               alt="edit icon"
               @click="toggleEditModal(doctor.id)"
               role="button"
+              class="mx-2"
             />
             <img
               src="@/assets/imgs/delete-icon.png"
@@ -200,6 +222,7 @@
     <!-- Pagination -->
     <el-pagination
       class="position-fixed bottom-0"
+      v-if="totalPages > 1"
       background
       layout="prev, pager, next"
       :current-page.sync="page"
@@ -238,16 +261,6 @@ export default {
       totalPages: 1,
       targetId: null,
       editTeamForm: {},
-      editTeamFormRules: {
-        nameAr: [{ required: true, message: "Arabic name Is Required" }],
-        nameEn: [{ required: true, message: "English name Is Required" }],
-        descriptionAr: [
-          { required: true, message: "Arabic descriptoin Is Required" },
-        ],
-        descriptionEn: [
-          { required: true, message: "English descriptoin Is Required" },
-        ],
-      },
     };
   },
   async fetch() {
@@ -257,13 +270,23 @@ export default {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
     },
-    toggleEditModal(doctorId) {
+    closeEditModal() {
+      this.editModalTrigger = !this.editModalTrigger;
+      this.selectedImage = null;
+      this.selectedImageUrl = null;
+    },
+    async toggleEditModal(doctorId) {
+      const docRes = await this.$axios.get(`/team/${doctorId}`);
+      this.editTeamForm = { ...docRes.data };
+      this.selectedImage = docRes.data.image;
+      this.selectedImageUrl = docRes.data.image;
       this.editModalTrigger = !this.editModalTrigger;
       this.targetId = doctorId;
     },
     onImageSeclected(e) {
       if (e.target.files.length > 0) {
         this.selectedImage = this.teamForm.image = e.target.files[0];
+        this.editTeamForm.image = e.target.files[0];
         this.selectedImageUrl = URL.createObjectURL(this.selectedImage);
       }
     },
@@ -336,6 +359,9 @@ export default {
     editDoctor() {
       this.$refs.editTeamForm.validate(async (valid) => {
         if (valid) {
+          if (!this.selectedImage) {
+            return;
+          }
           const loading = this.$loading({
             lock: true,
             text: "Loading",
@@ -343,13 +369,16 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            await this.$axios.patch(
-              `/team/${this.targetId}`,
-              this.editTeamForm
-            );
+            const fd = new FormData();
+            fd.append("nameAr", this.editTeamForm.nameAr);
+            fd.append("nameEn", this.editTeamForm.nameEn);
+            fd.append("image", this.editTeamForm.image);
+            fd.append("descriptionAr", this.editTeamForm.descriptionAr);
+            fd.append("descriptionEn", this.editTeamForm.descriptionEn);
+            await this.$axios.patch(`/team/${this.targetId}`, fd);
             // Reset
             this.editTeamForm = {};
-            this.toggleEditModal();
+            this.closeEditModal();
             await this.getTeam();
           } catch (error) {
             console.log(error);

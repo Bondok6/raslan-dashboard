@@ -4,7 +4,7 @@
     <UIPopupForm
       v-if="editModalTrigger"
       :modalTrigger="editModalTrigger"
-      @update:modalTrigger="toggleEditModal"
+      @update:modalTrigger="closeEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column gap-2"
@@ -12,6 +12,27 @@
         :model="editTeamForm"
         ref="editTeamForm"
       >
+        <el-form-item label=" " prop="image">
+          <label for="formFile" class="form-label"
+            >أضف الصورة الخاصة بدكتور المعمل</label
+          >
+          <input
+            class="form-control"
+            type="file"
+            id="formFile"
+            @change="onImageSeclected"
+            accept="image/png, image/jpeg"
+          />
+          <div class="text-center m-2">
+            <img
+              :src="selectedImageUrl"
+              alt="preview"
+              v-if="selectedImageUrl"
+              width="150"
+              height="100"
+            />
+          </div>
+        </el-form-item>
         <div class="d-flex gap-2">
           <el-form-item label=" " prop="nameAr">
             <span> اسم الطبيب الجديد باللغة العربية </span>
@@ -121,8 +142,22 @@ export default {
     await this.getDoctor();
   },
   methods: {
-    toggleEditModal() {
+    async toggleEditModal() {
+      const docRes = await this.$axios.get(`/team/${this.$route.params.id}`);
+      this.editTeamForm = { ...docRes.data };
+      this.selectedImage = docRes.data.image;
+      this.selectedImageUrl = docRes.data.image;
       this.editModalTrigger = !this.editModalTrigger;
+    },
+    closeEditModal() {
+      this.editModalTrigger = !this.editModalTrigger;
+      this.selectedImage = null;
+      this.selectedImageUrl = null;
+    },
+    onImageSeclected(e) {
+      if (e.target.files.length > 0) {
+        this.editTeamForm.image = e.target.files[0];
+      }
     },
     async getDoctor() {
       const doctor = await this.$axios.get(`/team/${this.$route.params.id}`);
@@ -156,6 +191,9 @@ export default {
     editDoctor() {
       this.$refs.editTeamForm.validate(async (valid) => {
         if (valid) {
+          if (!this.selectedImage) {
+            return;
+          }
           const loading = this.$loading({
             lock: true,
             text: "Loading",
@@ -163,13 +201,16 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            await this.$axios.patch(
-              `/team/${this.$route.params.id}`,
-              this.editTeamForm
-            );
+            const fd = new FormData();
+            fd.append("nameAr", this.editTeamForm.nameAr);
+            fd.append("nameEn", this.editTeamForm.nameEn);
+            fd.append("image", this.editTeamForm.image);
+            fd.append("descriptionAr", this.editTeamForm.descriptionAr);
+            fd.append("descriptionEn", this.editTeamForm.descriptionEn);
+            await this.$axios.patch(`/team/${this.$route.params.id}`, fd);
             // Reset
             this.editTeamForm = {};
-            await this.toggleEditModal();
+            this.closeEditModal();
             await this.getDoctor();
           } catch (error) {
             console.log(error);
@@ -182,5 +223,3 @@ export default {
   },
 };
 </script>
-
-<style></style>
