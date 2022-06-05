@@ -9,7 +9,7 @@
         />
         <div class="stats-info">
           <h6 class="stats-info__title">العملاء الحاليين</h6>
-          <span> 600 </span>
+          <span> {{ countUsers }} </span>
         </div>
       </div>
 
@@ -20,8 +20,8 @@
           alt=""
         />
         <div class="stats-info">
-          <h6 class="stats-info__title">العملاء الحاليين</h6>
-          <span> 600 </span>
+          <h6 class="stats-info__title">الطلبات</h6>
+          <span> {{ countAllOrders }} </span>
         </div>
       </div>
 
@@ -32,8 +32,8 @@
           alt=""
         />
         <div class="stats-info">
-          <h6 class="stats-info__title">العملاء الحاليين</h6>
-          <span> 600 </span>
+          <h6 class="stats-info__title">الطلبات المرفوضة</h6>
+          <span> {{ countRejectedOrders }} </span>
         </div>
       </div>
 
@@ -44,8 +44,8 @@
           alt=""
         />
         <div class="stats-info">
-          <h6 class="stats-info__title">العملاء الحاليين</h6>
-          <span> 600 </span>
+          <h6 class="stats-info__title">استطلاعات الرأي</h6>
+          <span> {{ countPolls }} </span>
         </div>
       </div>
     </div>
@@ -76,5 +76,26 @@
 <script>
 export default {
   name: "IndexPage",
+  data() {
+    return {
+      countUsers: 0,
+      countAllOrders: 0,
+      countRejectedOrders: 0,
+      countPolls: 0,
+    };
+  },
+  async fetch() {
+    const countUsersRes = await this.$axios.get("/count/users");
+    const countPollsRes = await this.$axios.get("/polls/count");
+    const countOrdersRes = await this.$axios.get("/count/orders");
+    const countRejectedRes = await this.$axios.get(
+      "/count/orders?status=rejected"
+    );
+    this.countUsers = await countUsersRes.data.totalDoc;
+    this.countPolls = await countPollsRes.data.totalDoc;
+    this.countAllOrders = await countOrdersRes.data.totalDoc;
+    this.countRejectedOrders = await countRejectedRes.data.totalDoc;
+    console.log(this.countUsers);
+  },
 };
 </script>

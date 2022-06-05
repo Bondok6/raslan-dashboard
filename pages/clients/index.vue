@@ -275,7 +275,6 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            this.editClientForm.phone = "+2" + this.editClientForm.phone;
             await this.$axios.put(
               `/update/${this.targetId}/client`,
               this.editClientForm
