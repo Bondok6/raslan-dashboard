@@ -53,23 +53,42 @@
     <div class="home__testimonials">
       <h4>استطلاعات الرأى</h4>
       <div class="testimonials">
-        <section class="testimonials__card">
+        <section
+          class="testimonials__card"
+          v-for="poll in polls"
+          :key="poll.id"
+        >
           <div>
             <h6 class="testimonials__key">الاسم</h6>
-            <h6 class="testimonials__value">بدر جلال زهران</h6>
+            <h6 class="testimonials__value">{{ poll.name }}</h6>
           </div>
 
           <div>
             <h6 class="testimonials__key">رقم الهاتف</h6>
-            <h6 class="testimonials__value">01256215522</h6>
+            <h6 class="testimonials__value" dir="ltr">{{ poll.phone }}</h6>
           </div>
 
-          <button @click="$router.push('/testimonials/5')" class="icon-btn">
+          <button
+            @click="$router.push(`/testimonials/${poll.id}`)"
+            class="icon-btn"
+          >
             <img src="@/assets/imgs/details.svg" alt="" />
           </button>
         </section>
       </div>
     </div>
+
+    <!-- Pagination -->
+    <el-pagination
+      v-if="totalPages > 1"
+      class="position-fixed bottom-0"
+      background
+      layout="prev, pager, next"
+      :current-page.sync="page"
+      @current-change="getPolls"
+      :total="totalPages * 10"
+    >
+    </el-pagination>
   </div>
 </template>
 
@@ -82,20 +101,36 @@ export default {
       countAllOrders: 0,
       countRejectedOrders: 0,
       countPolls: 0,
+      polls: [],
+      totalPages: 0,
+      page: 0,
     };
   },
   async fetch() {
-    const countUsersRes = await this.$axios.get("/count/users");
-    const countPollsRes = await this.$axios.get("/polls/count");
-    const countOrdersRes = await this.$axios.get("/count/orders");
-    const countRejectedRes = await this.$axios.get(
-      "/count/orders?status=rejected"
-    );
-    this.countUsers = await countUsersRes.data.totalDoc;
-    this.countPolls = await countPollsRes.data.totalDoc;
-    this.countAllOrders = await countOrdersRes.data.totalDoc;
-    this.countRejectedOrders = await countRejectedRes.data.totalDoc;
-    console.log(this.countUsers);
+    await this.getCounters();
+    await this.getPolls();
+  },
+  methods: {
+    async getCounters() {
+      const countUsersRes = await this.$axios.get("/count/users");
+      const countPollsRes = await this.$axios.get("/polls/count");
+      const countOrdersRes = await this.$axios.get("/count/orders");
+      const countRejectedRes = await this.$axios.get(
+        "/count/orders?status=rejected"
+      );
+      this.countUsers = await countUsersRes.data.totalDoc;
+      this.countPolls = await countPollsRes.data.totalDoc;
+      this.countAllOrders = await countOrdersRes.data.totalDoc;
+      this.countRejectedOrders = await countRejectedRes.data.totalDoc;
+    },
+    async getPolls() {
+      let params = { page: this.page };
+      const pollsRes = await this.$axios.get("/polls", { params });
+      this.polls = await pollsRes.data.docs;
+      this.totalPages = await pollsRes.data.totalPages;
+      this.page = await pollsRes.data.page;
+      console.log(this.polls);
+    },
   },
 };
 </script>
