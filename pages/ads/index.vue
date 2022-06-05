@@ -1,5 +1,5 @@
 <template>
-  <section class="page ads-page" v-if="!$fetchState.pending">
+  <section class="page ads-page">
     <UIAddButton @click="toggleModal" buttonText="اضافة اعلان" />
 
     <!-- Add Ads -->
@@ -58,6 +58,7 @@
           <el-input
             v-model="adsForm.titleEn"
             placeholder="اكتب عنوان الاعلان باللغة الانجليزية"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 
@@ -85,13 +86,35 @@
     <UIPopupForm
       v-if="editModalTrigger"
       :modalTrigger="editModalTrigger"
-      @update:modalTrigger="toggleEditModal"
+      @update:modalTrigger="closeEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column gap-2"
+        :rules="adsFormRules"
         :model="editAdsForm"
-        ref="editAdsForm"
+        ref="adsForm"
       >
+        <el-form-item label=" " prop="image">
+          <label for="formFile" class="form-label"
+            >أضف الايقون التي تعبر عن بالفئة</label
+          >
+          <input
+            class="form-control"
+            type="file"
+            id="formFile"
+            @change="onImageSeclected"
+            accept="image/png, image/jpeg"
+          />
+          <div class="text-center m-2">
+            <img
+              :src="selectedImageUrl"
+              alt="preview"
+              v-if="selectedImageUrl"
+              width="150"
+              height="100"
+            />
+          </div>
+        </el-form-item>
         <el-form-item label=" " prop="titleAr">
           <span>عنوان الاعلان الجديد باللغة العربية</span>
           <el-input
@@ -114,6 +137,7 @@
           <el-input
             v-model="editAdsForm.titleEn"
             placeholder="اكتب عنوان الاعلان باللغة الانجليزية"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 
@@ -207,20 +231,18 @@ export default {
       editModalTrigger: false,
       selectedImage: null,
       selectedImageUrl: null,
-      adsForm: {
-        image: null,
-      },
+      adsForm: { image: null },
+      editAdsForm: {},
       adsFormRules: {
         titleAr: [{ required: true, message: "Arabic title Is Required" }],
         descriptionAr: [
-          { required: true, message: "English description Is Required" },
+          { required: true, message: "Arabic description Is Required" },
         ],
         titleEn: [{ required: true, message: "English title Is Required" }],
         descriptionEn: [
           { required: true, message: "English description Is Required" },
         ],
       },
-      editAdsForm: {},
       ads: [],
       page: 1,
       totalPages: 1,
@@ -234,13 +256,23 @@ export default {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
     },
-    toggleEditModal(id) {
+    closeEditModal() {
+      this.editModalTrigger = !this.editModalTrigger;
+      this.selectedImage = null;
+      this.selectedImageUrl = null;
+    },
+    async toggleEditModal(id) {
+      const AdRes = await this.$axios.get(`/ads/${id}`);
+      this.editAdsForm = { ...AdRes.data };
+      this.selectedImage = AdRes.data.image;
+      this.selectedImageUrl = AdRes.data.image;
       this.editModalTrigger = !this.editModalTrigger;
       this.targetId = id;
     },
     onImageSeclected(e) {
       if (e.target.files.length > 0) {
         this.selectedImage = this.adsForm.image = e.target.files[0];
+        this.editAdsForm.image = e.target.files[0];
         this.selectedImageUrl = URL.createObjectURL(this.selectedImage);
       }
     },
@@ -259,7 +291,7 @@ export default {
           try {
             const fd = new FormData();
             fd.append("titleAr", this.adsForm.titleAr);
-            fd.append("descriptionAr", this.adsForm.titleAr);
+            fd.append("descriptionAr", this.adsForm.descriptionAr);
             fd.append("titleEn", this.adsForm.titleEn);
             fd.append("descriptionEn", this.adsForm.descriptionEn);
             fd.append("image", this.adsForm.image);
@@ -310,12 +342,40 @@ export default {
           });
         });
     },
-    async editAds() {
-      await this.$axios.patch(`/ads/${this.targetId}`, this.editAdsForm);
-      // Reset
-      this.editAdsForm = {};
-      this.toggleEditModal();
-      await this.getAds();
+    editAds() {
+      this.$refs.adsForm.validate(async (valid) => {
+        if (valid) {
+          if (!this.selectedImage) {
+            return;
+          }
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            console.log(this.editAdsForm);
+            const fd = new FormData();
+            fd.append("image", this.editAdsForm.image);
+            fd.append("titleAr", this.editAdsForm.titleAr);
+            fd.append("descriptionAr", this.editAdsForm.descriptionAr);
+            fd.append("titleEn", this.editAdsForm.titleEn);
+            fd.append("descriptionEn", this.editAdsForm.descriptionEn);
+            await this.$axios.patch(`/ads/${this.targetId}`, fd);
+            // Reset
+            this.editAdsForm = {};
+            this.selectedImage = null;
+            this.selectedImageUrl = null;
+            this.editModalTrigger = false;
+            await this.getAds();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
   },
 };
