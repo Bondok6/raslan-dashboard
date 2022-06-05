@@ -66,7 +66,7 @@
     <UIPopupForm
       v-if="editModalTrigger"
       :modalTrigger="editModalTrigger"
-      @update:modalTrigger="toggleEditModal"
+      @update:modalTrigger="closeEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column"
@@ -202,7 +202,12 @@ export default {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
     },
-    toggleEditModal(clientId) {
+    closeEditModal() {
+      this.editModalTrigger = !this.editModalTrigger;
+    },
+    async toggleEditModal(clientId) {
+      const clientRes = await this.$axios.get(`/fetch/${clientId}/client`);
+      this.editClientForm = { ...clientRes.data };
       this.editModalTrigger = !this.editModalTrigger;
       this.targetId = clientId;
     },
@@ -278,7 +283,7 @@ export default {
             );
             // Reset
             this.editClientForm = {};
-            this.toggleEditModal();
+            this.closeEditModal();
             await this.getAllClients();
           } catch (error) {
             console.log(error);
