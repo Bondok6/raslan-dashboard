@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!$fetchState.pending">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة عميل" />
 
     <!-- Search -->
@@ -115,7 +115,8 @@
       v-if="allClients.length < 1"
       imgSrc="clients/no-clients.png"
       alt="no clients"
-      caption="قم بإضافة العلاء التابعين للمعمل "
+      caption="قم بإضافة العلاء
+    التابعين للمعمل "
     />
 
     <!-- Clients -->
