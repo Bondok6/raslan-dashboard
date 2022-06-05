@@ -147,12 +147,25 @@
     <!-- Pagination -->
     <el-pagination
       v-if="totalPages > 1"
+      v-show="!Object.keys(calenderForm).length"
       class="position-relative bottom-0 my-4"
       background
       layout="prev, pager, next"
       :current-page.sync="page"
       @current-change="getAllOrders"
       :total="totalPages * 10"
+    >
+    </el-pagination>
+
+    <!-- Filter Pagination -->
+    <el-pagination
+      v-if="filterTotalPages > 1"
+      class="position-relative bottom-0 my-4"
+      background
+      layout="prev, pager, next"
+      :current-page.sync="filterPage"
+      @current-change="getFilterOrderByDate"
+      :total="filterTotalPages * 10"
     >
     </el-pagination>
   </section>
@@ -174,6 +187,8 @@ export default {
       allOrders: [],
       page: 1,
       totalPages: 1,
+      filterPage: 1,
+      filterTotalPages: 1,
       date: "",
     };
   },
@@ -198,6 +213,16 @@ export default {
       this.totalPages = await ordersRes.data.totalPages;
       this.page = await ordersRes.data.page;
     },
+    async getFilterOrderByDate() {
+      let params = { page: this.filterPage };
+      const filterRes = await this.$axios.get(
+        `orders?day=${this.calenderForm.dateInput.toISOString()}`,
+        { params }
+      );
+      this.allOrders = await filterRes.data.docs;
+      this.filterTotalPages = await filterRes.data.totalPages;
+      this.filterPage = await filterRes.data.page;
+    },
     dateFormat(date) {
       const df = new Date(date);
       return df.getFullYear() + "-" + df.getMonth() + "-" + df.getDate();
@@ -212,18 +237,10 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            let params = { page: this.page };
-            const filterRes = await this.$axios.get(
-              `orders?day=${this.calenderForm.dateInput.toISOString()}`,
-              { params }
-            );
-            this.allOrders = await filterRes.data.docs;
-            this.totalPages = await filterRes.data.totalPages;
-            this.page = await filterRes.data.page;
-            // Reset
-            this.calenderForm = {};
+            await this.getFilterOrderByDate();
             this.toggleCalender();
           } catch (error) {
+            console.log(error);
           } finally {
             loading.close();
           }
