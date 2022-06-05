@@ -15,7 +15,7 @@
         ref="cityForm"
       >
         <el-form-item label=" " prop="nameAr">
-          <span>المحافظة</span>
+          <span>المحافظة باللغة العربية</span>
           <el-input
             v-model="cityForm.nameAr"
             placeholder="اكتب اسم المحافظة باللغة العربية"
@@ -40,11 +40,11 @@
     <UIPopupForm
       v-if="editModalTrigger"
       :modalTrigger="editModalTrigger"
-      @update:modalTrigger="toggleEditModal"
+      @update:modalTrigger="closeEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column gap-2"
-        :rules="editCityFormRules"
+        :rules="cityFormRules"
         :model="editCityForm"
         ref="editCityForm"
       >
@@ -61,6 +61,7 @@
           <el-input
             v-model="editCityForm.nameEn"
             placeholder="اكتب اسم المحافظةالجديد باللغة الانجليزية"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 
@@ -135,10 +136,6 @@ export default {
       page: 1,
       totalPages: 1,
       editCityForm: {},
-      editCityFormRules: {
-        nameAr: [{ required: true, message: "Arabic name Is Required" }],
-        nameEn: [{ required: true, message: "English name Is Required" }],
-      },
       targetId: null,
     };
   },
@@ -149,7 +146,12 @@ export default {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
     },
-    toggleEditModal(cityId) {
+    closeEditModal() {
+      this.editModalTrigger = !this.editModalTrigger;
+    },
+    async toggleEditModal(cityId) {
+      const cityRes = await this.$axios.get(`/city/${cityId}`);
+      this.editCityForm = { ...cityRes.data };
       this.editModalTrigger = !this.editModalTrigger;
       this.targetId = cityId;
     },
@@ -224,7 +226,7 @@ export default {
             );
             // Reset
             this.editCityForm = {};
-            this.toggleEditModal();
+            this.closeEditModal();
             await this.getAllCities();
           } catch (error) {
             console.log(error);

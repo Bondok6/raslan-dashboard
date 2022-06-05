@@ -24,6 +24,7 @@
           <el-input
             v-model="editCityForm.nameEn"
             placeholder="اكتب اسم المحافظةالجديد باللغة الانجليزية"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 
@@ -72,6 +73,7 @@ export default {
   },
   methods: {
     toggleEditModal() {
+      this.editCityForm = this.city;
       this.editModalTrigger = !this.editModalTrigger;
     },
     async getCity() {
@@ -104,13 +106,30 @@ export default {
         });
     },
     async editCity() {
-      await this.$axios.patch(
-        `city/${this.$route.params.id}`,
-        this.editCityForm
-      );
-      this.editCityForm = {};
-      this.getCity();
-      this.toggleModal();
+      this.$refs.editCityForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            await this.$axios.patch(
+              `city/${this.$route.params.id}`,
+              this.editCityForm
+            );
+            this.editCityForm = {};
+            this.getCity();
+            this.editModalTrigger = false;
+            await this.getAllCities();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
   },
 };
