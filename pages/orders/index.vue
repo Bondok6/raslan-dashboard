@@ -1,5 +1,5 @@
 <template>
-  <section class="orders-page" v-if="!$fetchState.pending">
+  <section class="orders-page">
     <!-- Filters -->
     <div class="d-flex justify-content-end align-items-center gap-3">
       <div class="search">
