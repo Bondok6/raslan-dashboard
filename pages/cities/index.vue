@@ -111,6 +111,7 @@
     <!-- Pagination -->
     <el-pagination
       class="position-fixed bottom-0"
+      v-if="totalPages > 1"
       background
       layout="prev, pager, next"
       :current-page.sync="page"

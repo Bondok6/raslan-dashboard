@@ -3,9 +3,12 @@
     <UIAddButton @click="toggleModal" buttonText="اضافة مقالة" />
 
     <!-- Search & Filter -->
-    <div class="d-flex flex-wrap gap-2">
+    <div
+      class="d-flex flex-wrap gap-2"
+      v-if="!modalTrigger && !editModalTrigger"
+    >
       <!-- Search -->
-      <div class="search w-50" v-if="!modalTrigger" v-show="!editModalTrigger">
+      <div class="search w-50">
         <img
           src="@/assets/imgs/orders/search.png"
           alt="search icon"
@@ -166,23 +169,6 @@
           </el-form-item>
 
           <div class="col-lg-8 row">
-            <el-form-item class="col-lg-12" prop="category">
-              <span>اختر الفئة التي تنتمى اليها المقالة</span>
-              <el-select
-                v-model="editTopicForm.category"
-                placeholder="اختر الفئات المناسبة"
-                class="w-100"
-              >
-                <el-option
-                  v-for="category in categories"
-                  :key="category.id"
-                  :label="category.titleAr"
-                  :value="category.id"
-                  class="text-center"
-                >
-                </el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleAr">
               <span>اسم المقالة باللغة العربية</span>
               <el-input
@@ -195,7 +181,8 @@
               <span>اسم المقالة باللغة الانجليزية</span>
               <el-input
                 v-model="editTopicForm.titleEn"
-                placeholder="كتب اسم المقالة باللغة الانجليزية"
+                placeholder="Enter the title of the article in English"
+                dir="ltr"
               ></el-input>
             </el-form-item>
           </div>
@@ -282,6 +269,18 @@
         </div>
       </div>
     </div>
+
+    <!-- Pagination -->
+    <el-pagination
+      v-if="totalPages > 1"
+      class="position-fixed bottom-0"
+      background
+      layout="prev, pager, next"
+      :current-page.sync="page"
+      @current-change="getTopics"
+      :total="totalPages * 10"
+    >
+    </el-pagination>
   </section>
 </template>
 

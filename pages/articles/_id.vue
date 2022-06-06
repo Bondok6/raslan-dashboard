@@ -27,23 +27,6 @@
           </el-form-item>
 
           <div class="col-lg-8 row">
-            <el-form-item class="col-lg-12" prop="category">
-              <span>اختر الفئة التي تنتمى اليها المقالة</span>
-              <el-select
-                v-model="editTopicForm.category"
-                placeholder="اختر الفئات المناسبة"
-                class="w-100"
-              >
-                <el-option
-                  v-for="category in categories"
-                  :key="category.id"
-                  :label="category.titleAr"
-                  :value="category.id"
-                  class="text-center"
-                >
-                </el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleAr">
               <span>اسم المقالة باللغة العربية</span>
               <el-input
@@ -56,7 +39,8 @@
               <span>اسم المقالة باللغة الانجليزية</span>
               <el-input
                 v-model="editTopicForm.titleEn"
-                placeholder="كتب اسم المقالة باللغة الانجليزية"
+                placeholder="Enter the title of the article in English"
+                dir="ltr"
               ></el-input>
             </el-form-item>
           </div>
@@ -266,5 +250,3 @@ export default {
   },
 };
 </script>
-
-<style></style>
