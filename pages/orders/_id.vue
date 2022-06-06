@@ -59,7 +59,7 @@
               <h6 class="key">حالة الحجز</h6>
               <h6 class="value">
                 <el-select
-                  v-model="orderStatus"
+                  v-model="order.status"
                   placeholder="Select"
                   :disabled="disabled"
                   required
@@ -74,10 +74,10 @@
                 </el-select>
               </h6>
             </div>
-            <div v-if="orderStatus == 'rejected'">
+            <div v-if="order.status == 'rejected'">
               <el-input
                 type="input"
-                v-model="whyRejected"
+                v-model="order.whyRejected"
                 placeholder="سبب الرفض"
                 required
                 :disabled="disabled"
@@ -107,9 +107,9 @@
               <h6 class="value">
                 <div class="block">
                   <el-date-picker
-                    v-model="visitDate"
+                    v-model="order.day"
                     type="date"
-                    :disabled="disabled || orderStatus != 'accepted'"
+                    :disabled="disabled || order.status != 'accepted'"
                     required
                   >
                   </el-date-picker>
@@ -142,13 +142,13 @@
               <h6 class="key">وقت الزيارة</h6>
               <h6 class="value">
                 <el-time-select
-                  v-model="visitTime"
+                  v-model="order.timeAttendance"
                   :picker-options="{
                     start: '01:00',
                     step: '00:30',
                     end: '24:00',
                   }"
-                  :disabled="disabled || orderStatus != 'accepted'"
+                  :disabled="disabled || order.status != 'accepted'"
                 >
                 </el-time-select>
               </h6>
@@ -159,11 +159,11 @@
             >
               <h6 class="key">من</h6>
               <h6 class="value">
-                <el-time-select v-model="timeFrom" disabled> </el-time-select>
+                <el-time-select v-model="order.from" disabled> </el-time-select>
               </h6>
               <h6 class="key">الي</h6>
               <h6 class="value">
-                <el-time-select v-model="timeTo" disabled> </el-time-select>
+                <el-time-select v-model="order.to" disabled> </el-time-select>
               </h6>
             </div>
           </div>
@@ -221,20 +221,6 @@
         <div v-else class="m-5 w-100 align-middle">
           لا توجد نتيجة مضافة حتي الان
         </div>
-      </div>
-
-      <!-- ملاحظات للعميل -->
-      <div class="card-item w-100 my-2">
-        <label for="exampleFormControlTextarea1" class="form-label fw-bold"
-          >ملاحظات للعميل</label
-        >
-        <textarea
-          class="form-control"
-          id="exampleFormControlTextarea1"
-          rows="3"
-          v-model="order.clientNotes"
-          :disabled="disabled"
-        ></textarea>
       </div>
     </div>
 
@@ -316,8 +302,6 @@ export default {
     return {
       loading: false,
       order: {},
-      visitDate: "",
-      visitTime: "",
       disabled: true,
       statusOptions: [
         {
@@ -341,14 +325,9 @@ export default {
           label: "يتم سحب العينة",
         },
       ],
-      orderStatus: "",
       reason: false,
-      whyRejected: "",
-      clientNotes: "",
       errorMsg: false,
       successMsg: false,
-      timeFrom: "",
-      timeTo: "",
       modalTrigger: false,
       editModalTrigger: false,
       resultForm: { attachment: null },
@@ -368,12 +347,7 @@ export default {
     async getOrder() {
       const order = await this.$axios.get(`/orders/${this.$route.params.id}`);
       this.order = await order.data;
-      this.orderStatus = await order.data.status;
-      this.visitDate = await order.data.day;
-      this.visitTime = await order.data.timeAttendance;
-      this.clientNotes = await order.data.whyRejected;
-      this.timeFrom = await order.data.from;
-      this.timeTo = await order.data.to;
+      console.log(this.order);
     },
     dateFormat(date) {
       const df = new Date(date);
@@ -409,44 +383,13 @@ export default {
       this.errorMsg = false;
     },
     async saveEdit() {
-      if (this.visitDate != this.order.day)
-        this.visitDate = this.visitDate.toISOString();
-
-      const editOrderForm = {
-        status: this.orderStatus,
-        whyRejected: this.whyRejected,
-        clientNotes: this.clientNotes || "",
-        timeAttendance: this.visitTime,
-        day: this.visitDate,
-      };
-
-      if (
-        editOrderForm.status != "rejected" &&
-        editOrderForm.status != "accepted"
-      ) {
-        try {
-          await this.$axios.patch(`/orders/${this.$route.params.id}`, {
-            status: editOrderForm.status,
-          });
-          this.disabled = true;
-          this.successMsg = true;
-          this.errorMsg = false;
-        } catch (error) {
-          this.errorMsg = true;
-        }
-      } else {
-        try {
-          await this.$axios.patch(
-            `/orders/${this.$route.params.id}`,
-            editOrderForm
-          );
-
-          this.disabled = true;
-          this.successMsg = true;
-          this.errorMsg = false;
-        } catch (error) {
-          this.errorMsg = true;
-        }
+      try {
+        await this.$axios.patch(`/orders/${this.$route.params.id}`, this.order);
+        this.disabled = true;
+        this.errorMsg = false;
+        this.successMsg = true;
+      } catch (error) {
+        this.errorMsg = true;
       }
     },
     toggleModal() {
@@ -499,8 +442,9 @@ export default {
       const resultRes = await this.$axios.get(
         `/results?order=${this.$route.params.id}`
       );
-      this.results = await resultRes.data[0].docs;
-      console.log(this.reults);
+      if (resultRes.data.length > 0) {
+        this.results = resultRes.data[0].docs;
+      }
     },
   },
 };
