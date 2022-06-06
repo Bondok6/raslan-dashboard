@@ -413,8 +413,6 @@ export default {
             this.packagesForm.tests.forEach((test) => {
               fd.append("tests", test);
             });
-            fd.append("measuresAr", this.packagesForm.measuresAr);
-            fd.append("measuresEn", this.packagesForm.measuresEn);
             fd.append("price", this.packagesForm.price || "");
             fd.append(
               "priceAfterDiscount",

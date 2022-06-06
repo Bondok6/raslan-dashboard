@@ -344,7 +344,6 @@ export default {
       this.analysisForm = { ...this.test };
       this.selectedImage = this.test.icon;
       this.selectedImageUrl = this.test.icon;
-      console.log(this.analysisForm);
       this.modalTrigger = !this.modalTrigger;
     },
     onImageSeclected(e) {
