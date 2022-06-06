@@ -23,12 +23,6 @@
             </el-form-item>
           </el-form>
 
-          <div class="text-center mb-3">
-            <nuxt-link to="/signup" class="orange-text"
-              >انشاء حساب جديد</nuxt-link
-            >
-          </div>
-
           <div>
             <button
               @click.prevent="submitLogin()"
