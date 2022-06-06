@@ -36,10 +36,11 @@
         </el-form-item>
 
         <el-form-item label=" " prop="phone">
-          <span>رقم الهاتف</span>
+          <span>رقم الهاتف الخاص بالعميل</span>
           <el-input
             v-model="clientsForm.phone"
-            placeholder="اكتب رقم الهاتف الخاص بالعميل"
+            placeholder="Client phone number"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 

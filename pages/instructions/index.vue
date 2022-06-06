@@ -39,31 +39,51 @@
             <span>اسم العينة باللغة الانجليزية</span>
             <el-input
               v-model="instructionForm.titleEn"
-              placeholder="كتب اسم العينة باللغة الانجليزية"
+              placeholder="Enter the sample name in English"
+              dir="ltr"
             ></el-input>
           </el-form-item>
         </div>
 
-        <el-form-item label=" " prop="detailsAr">
+        <el-form-item label=" " class="col-lg-8 col-md-12" prop="detailsAr">
           <span>التعليمات الازمة باللغة العربية</span>
-          <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="اكتب التعليمات الازم اتباعها باللغة العربية"
-            v-model="instructionForm.detailsAr"
-          >
-          </el-input>
+          <div class="d-flex gap-3">
+            <el-input
+              v-model="detailAr"
+              placeholder="اكتب الإجراء اللازم باللغة العربية ثم اضغط علي زر (اضافة) وقم بكتابه اجراء اخر اذا وجد"
+            ></el-input>
+            <button
+              type="button"
+              @click="addDetailsAr(detailAr)"
+              class="primary-btn px-3 d-flex gap-2"
+            >
+              اضافة
+              <span class="badge bg-white purple-text">{{
+                this.instructionForm.detailsAr.length
+              }}</span>
+            </button>
+          </div>
         </el-form-item>
 
-        <el-form-item label=" " prop="detailsEn">
-          <span>التعليمات الازمة باللغة الانجليزية</span>
-          <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="اكتب التعليمات الازم اتباعها باللغة الانجليزية"
-            v-model="instructionForm.detailsEn"
-          >
-          </el-input>
+        <el-form-item label=" " class="col-lg-8" prop="detailsEn">
+          <span>الإجراءات الازمة باللغة الانجليزية</span>
+          <div class="d-flex gap-3">
+            <el-input
+              v-model="detailEn"
+              placeholder="Write the necessary instructions in English, then press the (Add) button and write another instruction"
+              dir="ltr"
+            ></el-input>
+            <button
+              type="button"
+              @click="addDetailsEn(detailEn)"
+              class="primary-btn px-3 d-flex gap-2"
+            >
+              اضافة
+              <span class="badge bg-white purple-text">{{
+                this.instructionForm.detailsEn.length
+              }}</span>
+            </button>
+          </div>
         </el-form-item>
 
         <div class="buttons w-100 p-3 d-flex gap-2 justify-content-end">
@@ -88,9 +108,9 @@
     <!-- Update Instruction -->
     <div class="mt-3" v-if="editModalTrigger">
       <el-form
-        :rules="editInstructionFormRules"
+        :rules="instructionFormRules"
         :model="editInstructionForm"
-        ref="editInstructionForm"
+        ref="instructionForm"
       >
         <div class="row">
           <el-form-item label="" class="col-lg-6 col-md-12" prop="titleAr">
@@ -102,34 +122,68 @@
           </el-form-item>
 
           <el-form-item label=" " class="col-lg-6 col-md-12" prop="titleEn">
-            <span>اسم العينة باللغة الانجليزية</span>
+            <span>اسم العينة الجديد باللغة الانجليزية</span>
             <el-input
               v-model="editInstructionForm.titleEn"
-              placeholder="كتب اسم العينة الجديد باللغة الانجليزية"
+              placeholder="Enter the new sample name in English"
+              dir="ltr"
             ></el-input>
           </el-form-item>
         </div>
 
-        <el-form-item label=" " prop="detailsAr">
-          <span>التعليمات الجديدة الازمة باللغة العربية</span>
-          <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="اكتب التعليمات الجديدة الازمة اتباعها باللغة العربية"
-            v-model="editInstructionForm.detailsAr"
-          >
-          </el-input>
+        <el-form-item label=" " class="col-lg-12" prop="detailsAr">
+          <span>التعليمات الازمة باللغة العربية</span>
+          <div class="d-flex gap-3">
+            <el-input
+              v-model="EditDetailAr"
+              placeholder="اكتب الإجراء اللازم باللغة العربية ثم اضغط علي زر (اضافة) وقم بكتابه اجراء اخر اذا وجد"
+            ></el-input>
+            <button
+              type="button"
+              @click="addEditDetailsAr(EditDetailAr)"
+              class="primary-btn px-3 d-flex gap-2"
+            >
+              اضافة
+              <span class="badge bg-white purple-text">{{
+                this.editInstructionForm.detailsAr.length
+              }}</span>
+            </button>
+            <button
+              type="button"
+              @click="deleteDetailsAr()"
+              class="primary-btn px-3 d-flex gap-2"
+            >
+              حذف جميع التعليمات السابقة
+            </button>
+          </div>
         </el-form-item>
 
-        <el-form-item label=" " prop="detailsEn">
-          <span>التعليمات الجديدة الازمة باللغة الانجليزية</span>
-          <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="اكتب التعليمات الجديدة الازمة اتباعها باللغة الانجليزية"
-            v-model="editInstructionForm.detailsEn"
-          >
-          </el-input>
+        <el-form-item label=" " class="col-lg-12" prop="detailsEn">
+          <span>الإجراءات الازمة باللغة الانجليزية</span>
+          <div class="d-flex gap-3">
+            <el-input
+              v-model="EditDetailEn"
+              placeholder="Write the necessary instructions in English, then press the (Add) button and write another instruction"
+              dir="ltr"
+            ></el-input>
+            <button
+              type="button"
+              @click="addEditDetailsEn(EditDetailEn)"
+              class="primary-btn px-3 d-flex gap-2"
+            >
+              اضافة
+              <span class="badge bg-white purple-text">{{
+                this.editInstructionForm.detailsEn.length
+              }}</span>
+            </button>
+            <button
+              type="button"
+              @click="deleteDetailsEn()"
+              class="primary-btn px-3 d-flex gap-2"
+            >
+              Delete all previous Instructions
+            </button>
+          </div>
         </el-form-item>
 
         <div class="buttons w-100 p-3 d-flex gap-2 justify-content-end">
@@ -138,7 +192,7 @@
             class="secondary-btn w-25 align-self-end"
             @click.prevent="editInstruction"
           >
-            حفظ
+            حفظ التغييرات
           </button>
           <button
             type="submit"
@@ -215,7 +269,7 @@ export default {
       page: 1,
       totalPages: 1,
       allInstructions: [],
-      instructionForm: {},
+      instructionForm: { detailsAr: [], detailsEn: [] },
       editInstructionForm: {},
       instructionFormRules: {
         titleAr: [{ required: true, message: "Arabic title Is Required" }],
@@ -224,6 +278,10 @@ export default {
         detailsEn: [{ required: true, message: "English details Is Required" }],
       },
       targetId: null,
+      detailAr: "",
+      detailEn: "",
+      EditDetailAr: "",
+      EditDetailEn: "",
     };
   },
   async fetch() {
@@ -233,7 +291,9 @@ export default {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
     },
-    toggleEditModal(id) {
+    async toggleEditModal(id) {
+      const instructionRes = await this.$axios.get(`/instruction/${id}`);
+      this.editInstructionForm = { ...instructionRes.data };
       this.editModalTrigger = !this.editModalTrigger;
       this.targetId = id;
     },
@@ -267,18 +327,34 @@ export default {
         }
       });
     },
-    async editInstruction() {
-      await this.$axios.patch(
-        `/instruction/${this.targetId}`,
-        this.editInstructionForm
-      );
-      // Reset
-      this.editInstructionForm = {};
-      this.toggleEditModal();
-      await this.getAllInstructions();
+    editInstruction() {
+      this.$refs.instructionForm.validate(async (valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          try {
+            await this.$axios.patch(
+              `/instruction/${this.targetId}`,
+              this.editInstructionForm
+            );
+            // Reset
+            this.editInstructionForm = {};
+            this.cancelInstruction();
+            await this.getAllInstructions();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            loading.close();
+          }
+        }
+      });
     },
     cancelInstruction() {
-      this.instructionForm = {};
+      this.instructionForm = { detailsAr: [], detailsEn: [] };
       this.editInstructionForm = {};
       this.modalTrigger = false;
       this.editModalTrigger = false;
@@ -307,6 +383,32 @@ export default {
             message: "Delete canceled",
           });
         });
+    },
+    addDetailsAr(detail) {
+      if (!detail) return;
+      this.instructionForm.detailsAr.push(detail);
+      this.detailAr = "";
+    },
+    addDetailsEn(detail) {
+      if (!detail) return;
+      this.instructionForm.detailsEn.push(detail);
+      this.detailEn = "";
+    },
+    deleteDetailsAr() {
+      this.editInstructionForm.detailsAr = [];
+    },
+    deleteDetailsEn() {
+      this.editInstructionForm.detailsEn = [];
+    },
+    addEditDetailsAr(detail) {
+      if (!detail) return;
+      this.editInstructionForm.detailsAr.push(detail);
+      this.EditDetailAr = "";
+    },
+    addEditDetailsEn(detail) {
+      if (!detail) return;
+      this.editInstructionForm.detailsEn.push(detail);
+      this.EditDetailEn = "";
     },
   },
   computed: {

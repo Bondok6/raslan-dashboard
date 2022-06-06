@@ -232,7 +232,7 @@
           class="form-control"
           id="exampleFormControlTextarea1"
           rows="3"
-          v-model="clientNotes"
+          v-model="order.clientNotes"
           :disabled="disabled"
         ></textarea>
       </div>
@@ -414,8 +414,8 @@ export default {
 
       const editOrderForm = {
         status: this.orderStatus,
-        whyRejected: this.whyRejected || " ",
-        clientNotes: this.clientNotes || " ",
+        whyRejected: this.whyRejected,
+        clientNotes: this.clientNotes || "",
         timeAttendance: this.visitTime,
         day: this.visitDate,
       };
