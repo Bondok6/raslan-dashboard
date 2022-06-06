@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!$fetchState.pending">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة فرع" />
 
     <!-- Add Branch -->
@@ -23,6 +23,7 @@
                 :key="city.id"
                 :label="city.nameAr"
                 :value="city.id"
+                class="text-center"
               >
               </el-option>
             </el-select>
@@ -36,6 +37,7 @@
                 :key="region.id"
                 :label="region.nameAr"
                 :value="region.id"
+                class="text-center"
               >
               </el-option>
             </el-select>
@@ -54,8 +56,9 @@
           <el-form-item class="d-flex flex-column" prop="titleEn">
             <span>العنوان باللغة الانجليزية</span>
             <el-input
-              placeholder="العنوان"
+              placeholder="Enter an anddress in English"
               v-model="branchForm.titleEn"
+              dir="ltr"
             ></el-input>
           </el-form-item>
         </div>
@@ -63,8 +66,9 @@
         <el-form-item prop="location">
           <span>رابط الموقع على الخريطة</span>
           <el-input
-            placeholder="ادخل رابط الموقع على الخريطة"
+            placeholder="Enter the link of the location"
             v-model="branchForm.location"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 
@@ -82,11 +86,11 @@
     <UIPopupForm
       v-if="editModalTrigger"
       :modalTrigger="editModalTrigger"
-      @update:modalTrigger="toggleEditModal"
+      @update:modalTrigger="closeEditModal"
     >
       <el-form
         class="p-5 d-flex flex-column gap-2"
-        :rules="editBranchFormRules"
+        :rules="branchFormRules"
         :model="editBranchForm"
         ref="editBranchForm"
       >
@@ -102,8 +106,9 @@
           <el-form-item class="d-flex flex-column" prop="titleEn">
             <span>العنوان الجديد باللغة الانجليزية</span>
             <el-input
-              placeholder="العنوان"
+              placeholder="Enter a new address in English"
               v-model="editBranchForm.titleEn"
+              dir="ltr"
             ></el-input>
           </el-form-item>
         </div>
@@ -113,6 +118,7 @@
           <el-input
             placeholder="ادخل رابط الموقع الجديد على الخريطة"
             v-model="editBranchForm.location"
+            dir="ltr"
           ></el-input>
         </el-form-item>
 
@@ -177,6 +183,7 @@
     <!-- Pagination -->
     <el-pagination
       class="position-fixed bottom-0"
+      v-if="totalPages > 1"
       background
       layout="prev, pager, next"
       :current-page.sync="page"
@@ -205,11 +212,6 @@ export default {
         location: [{ required: true, message: "Location Is Required" }],
       },
       editBranchForm: {},
-      editBranchFormRules: {
-        titleAr: [{ required: true, message: "Arabic title Is Required" }],
-        titleEn: [{ required: true, message: "English title Is Required" }],
-        location: [{ required: true, message: "Location Is Required" }],
-      },
       targetId: null,
       page: 1,
       totalPages: 1,
@@ -224,9 +226,14 @@ export default {
     toggleModal() {
       this.modalTrigger = !this.modalTrigger;
     },
-    toggleEditModal(regionId) {
+    closeEditModal() {
       this.editModalTrigger = !this.editModalTrigger;
-      this.targetId = regionId;
+    },
+    async toggleEditModal(branchId) {
+      const branchRes = await this.$axios.get(`/branch/${branchId}`);
+      this.editBranchForm = { ...branchRes.data };
+      this.editModalTrigger = !this.editModalTrigger;
+      this.targetId = branchId;
     },
     async getAllCities() {
       const citiesRes = await this.$axios.get("/cities");
@@ -310,7 +317,7 @@ export default {
             );
             // Reset
             this.editBranchForm = {};
-            await this.toggleEditModal();
+            this.closeEditModal();
             await this.getAllBranches();
           } catch (error) {
             console.log(error);
