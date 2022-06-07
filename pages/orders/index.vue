@@ -7,6 +7,8 @@
           src="@/assets/imgs/orders/search.png"
           class="search__icon"
           alt="search icon"
+          @click="phoneFilter()"
+          role="button"
         />
         <el-input
           class="search__input"
@@ -51,7 +53,7 @@
     <div class="cards mt-3">
       <div
         class="card-item card-item--orders my-2"
-        v-for="order in filteredOrders"
+        v-for="order in allOrders"
         :key="order.id"
       >
         <div class="d-flex gap-4">
@@ -82,7 +84,7 @@
 
     <!-- No Orders -->
     <UIEmpty
-      v-if="filteredOrders.length < 1"
+      v-if="allOrders.length < 1"
       imgSrc="orders/no-orders.png"
       alt="no orders"
       caption="لا توجد حجوزات"
@@ -90,8 +92,7 @@
 
     <!-- Pagination -->
     <el-pagination
-      v-if="totalPages > 1"
-      v-show="!Object.keys(calenderForm).length"
+      v-if="totalPages > 1 && filterTotalPages == 1 && phoneTotalPages == 1"
       class="position-relative bottom-0 my-4"
       background
       layout="prev, pager, next"
@@ -110,6 +111,18 @@
       :current-page.sync="filterPage"
       @current-change="getFilterOrderByDate"
       :total="filterTotalPages * 10"
+    >
+    </el-pagination>
+
+    <!-- Phone Pagination -->
+    <el-pagination
+      v-if="phoneTotalPages > 1"
+      class="position-relative bottom-0 my-4"
+      background
+      layout="prev, pager, next"
+      :current-page.sync="phonePage"
+      @current-change="phoneFilter()"
+      :total="phoneTotalPages * 10"
     >
     </el-pagination>
   </section>
@@ -133,6 +146,8 @@ export default {
       totalPages: 1,
       filterPage: 1,
       filterTotalPages: 1,
+      phonePage: 1,
+      phoneTotalPages: 1,
       date: "",
     };
   },
@@ -146,10 +161,6 @@ export default {
     toggleCalender() {
       this.showCalender = !this.showCalender;
     },
-    // openFilter() {
-    //   this.showCalender = false;
-    //   this.showFilter = true;
-    // },
     async getAllOrders() {
       let params = { page: this.page };
       const ordersRes = await this.$axios.get("/orders", { params });
@@ -191,12 +202,19 @@ export default {
         }
       });
     },
-  },
-  computed: {
-    filteredOrders() {
-      return this.allOrders.filter((order) =>
-        order.phone.includes(this.searchInput)
-      );
+    async phoneFilter() {
+      try {
+        let params = { page: this.phonePage };
+        const filterRes = await this.$axios.get(
+          `orders?phone=${this.searchInput}`,
+          { params }
+        );
+        this.allOrders = await filterRes.data.docs;
+        this.phoneTotalPages = await filterRes.data.totalPages;
+        this.phonePage = await filterRes.data.page;
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };
