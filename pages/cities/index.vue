@@ -110,7 +110,7 @@
 
     <!-- Pagination -->
     <el-pagination
-      class="position-fixed bottom-0"
+      class="position-relative bottom-0 my-4"
       v-if="totalPages > 1"
       background
       layout="prev, pager, next"
