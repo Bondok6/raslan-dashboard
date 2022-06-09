@@ -44,21 +44,21 @@
 
   &__list-items {
     height: calc(100vh - 135px);
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 0 15px;
 
     &::-webkit-scrollbar {
-      width: 5px;
+      width: 6px;
     }
 
     /* Track */
     &::-webkit-scrollbar-track {
-      background: #f1f1f1;
+      background: #999;
     }
 
     /* Handle */
     &::-webkit-scrollbar-thumb {
-      background: #888;
+      background: $primaryColor;
     }
 
     /* Handle on hover */

@@ -232,6 +232,10 @@ export default {
         this.selectedImageUrl = URL.createObjectURL(this.selectedImage);
       }
     },
+    async getInfo() {
+      const infoRes = await this.$axios.get("/about");
+      this.info = await infoRes.data;
+    },
     addInfo() {
       this.$refs.aboutForm.validate(async (valid) => {
         if (valid) {
@@ -295,10 +299,6 @@ export default {
           }
         }
       });
-    },
-    async getInfo() {
-      const infoRes = await this.$axios.get("/about");
-      this.info = await infoRes.data;
     },
   },
 };
