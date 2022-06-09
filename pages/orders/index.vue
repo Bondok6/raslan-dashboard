@@ -1,5 +1,5 @@
 <template>
-  <section class="orders-page">
+  <section class="orders-page" @keyup.enter="phoneFilter()">
     <!-- Filters -->
     <div class="d-flex justify-content-end align-items-center gap-3">
       <div class="search">
@@ -17,10 +17,14 @@
           type="tel"
         ></el-input>
       </div>
+
       <div>
         <span class="calender" @click="toggleCalender">
           <img src="@/assets/imgs/orders/calender.png" alt="calender icon" />
         </span>
+      </div>
+      <div role="button" @click="clearFilter">
+        <img src="@/assets/imgs/reload.svg" width="25" />
       </div>
     </div>
 
@@ -92,7 +96,7 @@
 
     <!-- Pagination -->
     <el-pagination
-      v-if="totalPages > 1 && filterTotalPages == 1 && phoneTotalPages == 1"
+      v-if="totalPages > 1 && !filter"
       class="position-relative bottom-0 my-4"
       background
       layout="prev, pager, next"
@@ -149,6 +153,7 @@ export default {
       phonePage: 1,
       phoneTotalPages: 1,
       date: "",
+      filter: false,
     };
   },
   async fetch() {
@@ -194,6 +199,7 @@ export default {
           try {
             await this.getFilterOrderByDate();
             this.toggleCalender();
+            this.filter = true;
           } catch (error) {
             console.log(error);
           } finally {
@@ -203,6 +209,8 @@ export default {
       });
     },
     async phoneFilter() {
+      if (!this.searchInput) return;
+
       try {
         let params = { page: this.phonePage };
         const filterRes = await this.$axios.get(
@@ -212,9 +220,14 @@ export default {
         this.allOrders = await filterRes.data.docs;
         this.phoneTotalPages = await filterRes.data.totalPages;
         this.phonePage = await filterRes.data.page;
+        this.filter = true;
       } catch (error) {
         console.log(error);
       }
+    },
+    clearFilter() {
+      this.filter = false;
+      window.location.reload();
     },
   },
 };
