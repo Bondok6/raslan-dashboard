@@ -207,7 +207,7 @@
 
     <!-- No Instructions -->
     <UIEmpty
-      v-if="allInstructions.length < 1"
+      v-if="allInstructions.length < 1 && !modalTrigger"
       imgSrc="instruction/no-instruction.png"
       alt="no instruction"
       caption="قم بإضافة تعليمات لسحب العينة"

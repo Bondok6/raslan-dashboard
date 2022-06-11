@@ -202,7 +202,7 @@
 
     <!-- No Packages -->
     <UIEmpty
-      v-if="packages.length < 1"
+      v-if="packages.length < 1 && !modalTrigger"
       imgSrc="analysis/no-analysis.png"
       alt="no analysis"
       caption="قم بإضافة التحاليل التابعة للمعمل"

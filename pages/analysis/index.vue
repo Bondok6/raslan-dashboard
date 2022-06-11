@@ -194,7 +194,7 @@
 
     <!-- No Analysis -->
     <UIEmpty
-      v-if="tests.length < 1"
+      v-if="tests.length < 1 && !modalTrigger"
       imgSrc="analysis/no-analysis.png"
       alt="no analysis"
       caption="قم بإضافة التحاليل التابعة للمعمل"
