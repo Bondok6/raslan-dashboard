@@ -129,7 +129,6 @@ export default {
       this.polls = await pollsRes.data.docs;
       this.totalPages = await pollsRes.data.totalPages;
       this.page = await pollsRes.data.page;
-      console.log(this.polls);
     },
   },
 };

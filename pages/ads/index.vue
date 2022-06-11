@@ -355,7 +355,6 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            console.log(this.editAdsForm);
             const fd = new FormData();
             fd.append("image", this.editAdsForm.image);
             fd.append("titleAr", this.editAdsForm.titleAr);

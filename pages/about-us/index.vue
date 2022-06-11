@@ -261,7 +261,7 @@ export default {
             this.toggleModal();
             await this.getInfo();
           } catch (error) {
-            console.log(error);
+            this.$message.error("حدث خطأ ما");
           } finally {
             loading.close();
           }
@@ -293,7 +293,7 @@ export default {
             this.editModalTrigger = false;
             await this.getInfo();
           } catch (error) {
-            console.log(error);
+            this.$message.error("حدث خطأ ما");
           } finally {
             loading.close();
           }
