@@ -1,10 +1,6 @@
 <template>
   <div class="login-page">
     <section class="login-page__form-container">
-      <div class="alert alert-danger" role="alert" v-if="errorMsg">
-        Wrong Data, Please try again!
-      </div>
-
       <div class="row">
         <div class="col-md-12">
           <div class="text-center">
@@ -43,7 +39,6 @@ export default {
   middleware: "loggedIn",
   data() {
     return {
-      errorMsg: false,
       loginForm: {},
       loginFormRules: {
         phone: [{ required: true, message: "Phone Is Required" }],
@@ -66,7 +61,13 @@ export default {
             await this.$auth.loginWith("local", { data: this.loginForm });
             this.$router.push("/");
           } catch (error) {
-            this.errorMsg = true;
+            if (error.response.status === 401) {
+              this.$message.error(
+                "تأكد من ان رقم الهاتف يبدأ بكود الدولة (2+)"
+              );
+            } else {
+              this.$message.error("خطأ في تسجيل الدخول");
+            }
           } finally {
             loading.close();
           }

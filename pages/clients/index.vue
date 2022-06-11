@@ -236,7 +236,15 @@ export default {
             this.toggleModal();
             this.getAllClients();
           } catch (error) {
-            console.log(error);
+            if (error.response.status === 400) {
+              this.$message.error("هذا الرقم متواجد بالفعل");
+            } else if (error.response.status === 422) {
+              this.$message.error(
+                "تأكد من ان رقم الهاتف يبدأ بكود الدولة (2+)"
+              );
+            } else {
+              this.$message.error("حدث خطأ ما");
+            }
           } finally {
             loading.close();
           }
