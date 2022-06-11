@@ -245,18 +245,18 @@ export default {
     },
     deleteClient(client) {
       this.$confirm(
-        `Are you sure you want to delete ${client.username}`,
+        `هل انت متأكد من انك تريد حذف هذا العميل ${client.username}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "إلغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف العميل بنجاح",
           });
           await this.$axios.delete(`delete/${client.id}/client`);
           await this.getAllClients();
@@ -264,7 +264,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم إلغاء الحذف",
           });
         });
     },

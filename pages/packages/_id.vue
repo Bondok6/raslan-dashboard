@@ -343,18 +343,18 @@ export default {
     },
     deletePackage(pack) {
       this.$confirm(
-        `Are you sure you want to delete this package ${pack.titleAr}`,
+        `هل انت متأكد من انك تريد حذف هذه الباقة ${pack.titleAr}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "الغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف الباقة بنجاح",
           });
           await this.$axios.delete(`product/${pack.id}`);
           this.$router.push("/packages");
@@ -362,7 +362,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم الغاء الحذف",
           });
         });
     },

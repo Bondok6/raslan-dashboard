@@ -165,18 +165,18 @@ export default {
     },
     deleteDoctor(doctor) {
       this.$confirm(
-        `Are you sure you want to delete ${doctor.nameAr}`,
+        `هل انت متأكد من انك تريد حذف هذا الطبيب ${doctor.nameAr}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "إلغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف الطبيب بنجاح",
           });
           await this.$axios.delete(`team/${doctor.id}`);
           this.$router.push("/doctors");
@@ -184,7 +184,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم إلغاء الحذف",
           });
         });
     },

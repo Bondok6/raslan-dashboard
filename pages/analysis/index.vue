@@ -354,18 +354,18 @@ export default {
     },
     deleteTest(test) {
       this.$confirm(
-        `Are you sure you want to delete test ${test.titleAr}`,
+        `هل انت متأكد من انك تريد حذف هذا التحليل ${test.titleAr}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تاكيد",
+          cancelButtonText: "الغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف التحليل بنجاح",
           });
           await this.$axios.delete(`product/${test.id}`);
           await this.getTests();
@@ -373,7 +373,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم الغاء الحذف",
           });
         });
     },

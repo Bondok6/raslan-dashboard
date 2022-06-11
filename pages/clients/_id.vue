@@ -251,18 +251,18 @@ export default {
     },
     deleteResult(result) {
       this.$confirm(
-        `Are you sure you want to delete ${result.titleAr}`,
+        `هل انت متأكد من انك تريد حذف هذه النتيجة ${result.titleAr}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "الغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف النتيجة بنجاح",
           });
           await this.$axios.delete(`results/${result.id}`);
           await this.getResult();
@@ -270,7 +270,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم الغاء الحذف",
           });
         });
     },

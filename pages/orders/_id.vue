@@ -197,7 +197,9 @@
             v-for="(image, index) in order.images"
             :key="index"
           >
-            <img :src="image" alt="client image" width="150" height="150" />
+            <a :href="image" target="_blank">
+              <img :src="image" alt="client image" width="150" height="150" />
+            </a>
           </div>
         </div>
       </div>

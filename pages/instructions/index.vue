@@ -361,18 +361,18 @@ export default {
     },
     deleteInstruction(instruction) {
       this.$confirm(
-        `Are you sure you want to delete ${instruction.titleAr}`,
+        `هل انت متأكد من انك تريد حذف ${instruction.titleAr}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "إلغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف التعليم",
           });
           await this.$axios.delete(`instruction/${instruction.id}`);
           await this.getAllInstructions();
@@ -380,7 +380,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم إلغاء الأمر",
           });
         });
     },

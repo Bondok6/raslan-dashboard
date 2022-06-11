@@ -218,18 +218,18 @@ export default {
     },
     deleteRegion(region) {
       this.$confirm(
-        `Are you sure you want to delete ${region.nameAr}`,
+        `هل انت متأكد من انك تريد حذف هذه المنطقة ${region.nameAr}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "الغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف المنطقة بنجاح",
           });
           await this.$axios.delete(`region/${region.id}`);
           await this.getAllRegions();
@@ -237,7 +237,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم إلغاء الحذف",
           });
         });
     },

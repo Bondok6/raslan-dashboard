@@ -251,18 +251,18 @@ export default {
     },
     deleteCategory(category) {
       this.$confirm(
-        `Are you sure you want to delete category ${category.titleAr}`,
+        `هل انت متأكد من انك تريد حذف هذه الفئة ${category.titleAr}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تاكيد",
+          cancelButtonText: "الغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف الفئة بنجاح",
           });
           await this.$axios.delete(`category/${category.id}`);
           await this.getCategories();
@@ -270,7 +270,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم الغاء الحذف",
           });
         });
     },

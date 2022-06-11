@@ -16,7 +16,7 @@
       >
         <el-form-item label=" " prop="image">
           <label for="formFile" class="form-label"
-            >أضف الايقون التي تعبر عن بالفئة</label
+            >أضف الايقون التي تعبر عن الاعلان</label
           >
           <input
             class="form-control"
@@ -96,7 +96,7 @@
       >
         <el-form-item label=" " prop="image">
           <label for="formFile" class="form-label"
-            >أضف الايقون التي تعبر عن بالفئة</label
+            >أضف الايقون التي تعبر عن الاعلان</label
           >
           <input
             class="form-control"
@@ -319,18 +319,18 @@ export default {
     },
     deleteAds(ads) {
       this.$confirm(
-        `Are you sure you want to delete ${ads.titleAr}`,
+        `هل انت متاكد من انك تريد حذف هذا الاعلان ${ads.titleAr}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "الغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف الاعلان بنجاح",
           });
           await this.$axios.delete(`ads/${ads.id}`);
           await this.getAds();
@@ -338,7 +338,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم الغاء الحذف",
           });
         });
     },

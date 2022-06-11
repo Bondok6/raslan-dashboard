@@ -402,18 +402,18 @@ export default {
     },
     deleteTopic(topic) {
       this.$confirm(
-        `Are you sure you want to delete this article ${topic.titleAr}`,
+        `هل انت متاكد من انك تريد حذف هذه المقالة ${topic.titleAr}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "الغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف المقالة بنجاح",
           });
           await this.$axios.delete(`topics/${topic.id}`);
           await this.getTopics();
@@ -421,7 +421,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم الغاء الحذف",
           });
         });
     },

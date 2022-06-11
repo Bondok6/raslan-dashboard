@@ -86,12 +86,7 @@
         v-for="city in allCities"
         :key="city.id"
       >
-        <nuxt-link
-          :to="`/cities/${city.id}`"
-          class="text-reset text-decoration-none"
-        >
-          <h6>{{ city.nameAr }}</h6>
-        </nuxt-link>
+        <h6>{{ city.nameAr }}</h6>
 
         <div class="options me-5">
           <img
@@ -188,18 +183,18 @@ export default {
     },
     deleteCity(city) {
       this.$confirm(
-        `Are you sure you want to delete ${city.nameAr}`,
+        `هل انت متأكد من انك تريد حذف هذه المجافظة ${city.nameAr}`,
         "Warning",
         {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "إلغاء",
           type: "warning",
         }
       )
         .then(async () => {
           this.$message({
             type: "success",
-            message: "Delete completed",
+            message: "تم حذف المجافظة بنجاح",
           });
           await this.$axios.delete(`city/${city.id}`);
           await this.getAllCities();
@@ -207,7 +202,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "Delete canceled",
+            message: "تم إلغاء الحذف",
           });
         });
     },
