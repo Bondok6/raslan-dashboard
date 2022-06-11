@@ -228,7 +228,7 @@
 
     <!-- No Articles -->
     <UIEmpty
-      v-if="topics.length < 1"
+      v-if="topics.length < 1 && !modalTrigger"
       imgSrc="articles/no-articles.png"
       alt="no articles"
       caption="قم بإضافة المقالات  التي تنتمى الى هذه الفئة"
