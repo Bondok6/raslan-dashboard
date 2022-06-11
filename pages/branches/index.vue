@@ -17,7 +17,11 @@
         <div class="d-flex gap-3">
           <el-form-item prop="city" class="d-flex flex-column">
             <span>اختر المحافظة</span>
-            <el-select v-model="branchForm.city" placeholder="اختر المحافظة">
+            <el-select
+              v-model="branchForm.city"
+              placeholder="اختر المحافظة"
+              @change="getRegions(branchForm.city)"
+            >
               <el-option
                 v-for="city in allCities"
                 :key="city.id"
@@ -219,7 +223,6 @@ export default {
   },
   async fetch() {
     await this.getAllCities();
-    await this.getAllRegions();
     await this.getAllBranches();
   },
   methods: {
@@ -239,8 +242,8 @@ export default {
       const citiesRes = await this.$axios.get("/cities");
       this.allCities = await citiesRes.data.docs;
     },
-    async getAllRegions() {
-      const regionsRes = await this.$axios.get("/regions");
+    async getRegions(city) {
+      const regionsRes = await this.$axios.get(`/regions?city=${city}`);
       this.allRegions = await regionsRes.data.docs;
     },
     async getAllBranches() {
