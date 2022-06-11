@@ -1,13 +1,5 @@
 <template>
   <section v-if="!$fetchState.pending">
-    <!-- Flash Messages -->
-    <div class="alert alert-danger" role="alert" v-if="errorMsg">
-      بيانات مفقودة! من فضلك تأكد من ادخال جميع البيانات بشكل صحيح.
-    </div>
-    <div class="alert alert-success" role="alert" v-if="successMsg">
-      تم تعديل الحجز بنجاح .
-    </div>
-
     <!-- Options - icons -->
     <div class="d-flex flex-row-reverse gap-3">
       <img
@@ -69,6 +61,7 @@
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
+                    class="text-center"
                   >
                   </el-option>
                 </el-select>
@@ -125,7 +118,7 @@
             <div class="my-2 d-flex align-items-center gap-2">
               <h6 class="key">العنوان</h6>
               <h6 class="value">
-                {{ order.booking == "internal" ? "في المعمل" : "في المنزل" }}
+                {{ order.address }}
               </h6>
             </div>
             <div class="d-flex align-items-center gap-2">
@@ -145,7 +138,7 @@
                   v-model="order.timeAttendance"
                   :picker-options="{
                     start: '01:00',
-                    step: '00:30',
+                    step: '00:15',
                     end: '24:00',
                   }"
                   :disabled="disabled || order.status != 'accepted'"
@@ -328,8 +321,6 @@ export default {
         },
       ],
       reason: false,
-      errorMsg: false,
-      successMsg: false,
       modalTrigger: false,
       editModalTrigger: false,
       resultForm: { attachment: null },
@@ -349,7 +340,6 @@ export default {
     async getOrder() {
       const order = await this.$axios.get(`/orders/${this.$route.params.id}`);
       this.order = await order.data;
-      console.log(this.order);
     },
     dateFormat(date) {
       const df = new Date(date);
@@ -388,10 +378,11 @@ export default {
       try {
         await this.$axios.patch(`/orders/${this.$route.params.id}`, this.order);
         this.disabled = true;
-        this.errorMsg = false;
-        this.successMsg = true;
+        this.$message.success("تم تعديل الطلب بنجاح");
       } catch (error) {
-        this.errorMsg = true;
+        this.$message.error(
+          " بيانات مفقودة! من فضلك تأكد من ادخال جميع البيانات بشكل صحيح"
+        );
       }
     },
     toggleModal() {
