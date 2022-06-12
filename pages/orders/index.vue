@@ -1,6 +1,6 @@
 <template>
   <section class="orders-page" @keyup.enter="phoneFilter()">
-    <!-- Filters -->
+    <!-- Phone Filters -->
     <div class="d-flex justify-content-end align-items-center gap-3">
       <div class="search">
         <img
@@ -53,6 +53,27 @@
       </el-form>
     </UIPopupForm>
 
+    <!-- Status Filter -->
+    <el-form class="col-lg-4 col-sm-8">
+      <el-form-item>
+        <el-select
+          v-model="statusFilter"
+          @change="filterByStatus"
+          placeholder="حدد الطلبات باختيار الحالة المناسبة لها"
+          class="w-100"
+        >
+          <el-option
+            v-for="item in statusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+            class="text-center"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
+
     <!-- Orders -->
     <div class="cards mt-3">
       <div
@@ -96,37 +117,49 @@
 
     <!-- Pagination -->
     <el-pagination
-      v-if="totalPages > 1 && !filter"
+      v-if="totalPages > 1 && filter == ''"
       class="position-relative bottom-0 my-4"
       background
       layout="prev, pager, next"
       :current-page.sync="page"
-      @current-change="getAllOrders"
+      @current-change="getAllOrders()"
       :total="totalPages * 10"
     >
     </el-pagination>
 
-    <!-- Filter Pagination -->
+    <!-- Date Pagination -->
     <el-pagination
-      v-if="filterTotalPages > 1"
+      v-if="totalPages > 1 && filter == 'date'"
       class="position-relative bottom-0 my-4"
       background
       layout="prev, pager, next"
-      :current-page.sync="filterPage"
-      @current-change="getFilterOrderByDate"
-      :total="filterTotalPages * 10"
+      :current-page.sync="page"
+      @current-change="filterByDate()"
+      :total="totalPages * 10"
     >
     </el-pagination>
 
     <!-- Phone Pagination -->
     <el-pagination
-      v-if="phoneTotalPages > 1"
+      v-if="totalPages > 1 && filter == 'phone'"
       class="position-relative bottom-0 my-4"
       background
       layout="prev, pager, next"
-      :current-page.sync="phonePage"
+      :current-page.sync="page"
       @current-change="phoneFilter()"
-      :total="phoneTotalPages * 10"
+      :total="totalPages * 10"
+    >
+    </el-pagination>
+
+    <!-- Status Pagination -->
+    <el-pagination
+      v-if="totalPages > 1 && filter == 'status'"
+      class="position-relative bottom-0 my-4"
+      background
+      layout="prev, pager, next"
+      :current-page.sync="page"
+      @current-change="filterByStatus()"
+      :total="totalPages * 10"
     >
     </el-pagination>
   </section>
@@ -142,18 +175,23 @@ export default {
       calenderFormRules: {
         dateInput: [{ required: true, message: "You Should Select Date" }],
       },
+      statusOptions: [
+        { value: "all", label: "كل الطلبات" },
+        { value: "pending", label: "في انتظار التأكيد" },
+        { value: "accepted", label: "تمت الموافقة" },
+        { value: "rejected", label: "تم الرفض" },
+        { value: "done", label: "تم التسليم" },
+        { value: "inProgress", label: "يتم سحب العينة" },
+      ],
+      statusFilter: "",
       modalTrigger: false,
       showCalender: false,
       showFilter: false,
       allOrders: [],
       page: 1,
       totalPages: 1,
-      filterPage: 1,
-      filterTotalPages: 1,
-      phonePage: 1,
-      phoneTotalPages: 1,
       date: "",
-      filter: false,
+      filter: "",
     };
   },
   async fetch() {
@@ -173,15 +211,16 @@ export default {
       this.totalPages = await ordersRes.data.totalPages;
       this.page = await ordersRes.data.page;
     },
-    async getFilterOrderByDate() {
-      let params = { page: this.filterPage };
+    async filterByDate() {
+      let params = { page: this.page };
       const filterRes = await this.$axios.get(
         `orders?day=${this.calenderForm.dateInput.toISOString()}`,
         { params }
       );
       this.allOrders = await filterRes.data.docs;
-      this.filterTotalPages = await filterRes.data.totalPages;
-      this.filterPage = await filterRes.data.page;
+      this.totalPages = await filterRes.data.totalPages;
+      this.page = await filterRes.data.page;
+      this.filter = "date";
     },
     dateFormat(date) {
       const df = new Date(date);
@@ -197,9 +236,8 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           try {
-            await this.getFilterOrderByDate();
+            await this.filterByDate();
             this.toggleCalender();
-            this.filter = true;
           } catch (error) {
             console.log(error);
           } finally {
@@ -210,17 +248,16 @@ export default {
     },
     async phoneFilter() {
       if (!this.searchInput) return;
-
       try {
-        let params = { page: this.phonePage };
+        let params = { page: this.page };
         const filterRes = await this.$axios.get(
           `orders?phone=${this.searchInput}`,
           { params }
         );
         this.allOrders = await filterRes.data.docs;
-        this.phoneTotalPages = await filterRes.data.totalPages;
-        this.phonePage = await filterRes.data.page;
-        this.filter = true;
+        this.totalPages = await filterRes.data.totalPages;
+        this.page = await filterRes.data.page;
+        this.filter = "phone";
       } catch (error) {
         console.log(error);
       }
@@ -228,6 +265,21 @@ export default {
     clearFilter() {
       this.filter = false;
       window.location.reload();
+    },
+    async filterByStatus() {
+      this.filter = "status";
+      if (this.statusFilter === "all") {
+        await this.getAllOrders();
+        return;
+      }
+      let params = { page: this.page };
+      const ordersRes = await this.$axios.get(
+        `/orders?status=${this.statusFilter}`,
+        { params }
+      );
+      this.allOrders = await ordersRes.data.docs;
+      this.totalPages = await ordersRes.data.totalPages;
+      this.page = await ordersRes.data.page;
     },
   },
 };
