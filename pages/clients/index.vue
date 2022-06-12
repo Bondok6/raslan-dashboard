@@ -165,6 +165,7 @@
 
     <!-- Pagination -->
     <el-pagination
+      v-if="totalPages > 1"
       class="position-relative bottom-0 my-4"
       background
       layout="prev, pager, next"

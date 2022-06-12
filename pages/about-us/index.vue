@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!$fetchState.pending">
+  <section>
     <UIAddButton @click="toggleModal" buttonText="اضافة معلومة" />
 
     <!-- No Info -->
@@ -205,7 +205,7 @@ export default {
           { required: true, message: "English description Is Required" },
         ],
       },
-      info: null,
+      info: {},
     };
   },
   async fetch() {
