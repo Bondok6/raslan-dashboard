@@ -166,7 +166,12 @@
           </div>
           <div class="d-flex align-items-center gap-2">
             <h6 class="key">الموقع</h6>
-            <a class="value orange-text" :href="branch.location">اضغط هنا</a>
+            <a
+              class="value orange-text"
+              :href="branch.location"
+              target="_blanck"
+              >اضغط هنا</a
+            >
           </div>
         </div>
         <div class="options">
