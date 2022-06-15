@@ -4,7 +4,7 @@
 
     <!-- No Info -->
     <UIEmpty
-      v-if="!info && !formToggle"
+      v-if="Object.keys(info).length < 1 && !formToggle"
       imgSrc="about/no-info.png"
       alt="no info"
       caption="قم بإضافة معلومات تخص المعمل"
@@ -159,7 +159,10 @@
     </div>
 
     <!-- Info -->
-    <div class="cards mt-3" v-if="!formToggle" v-show="!editModalTrigger">
+    <div
+      class="cards mt-3"
+      v-if="!formToggle && !editModalTrigger && Object.keys(info).length > 1"
+    >
       <div class="card-item card-item--ads card-item--ads--large">
         <div>
           <img

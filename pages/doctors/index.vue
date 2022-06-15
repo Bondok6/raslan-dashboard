@@ -178,7 +178,7 @@
 
     <!-- No Doctors -->
     <UIEmpty
-      v-if="!team"
+      v-if="team"
       imgSrc="doctors/no-doctors.png"
       alt="no doctors"
       caption="قم بإضافة الفريق الطبي الخاص بالمعمل "
@@ -332,11 +332,15 @@ export default {
       this.page = await teamRes.data.page;
     },
     deleteDoctor(doctor) {
-      this.$confirm(`هل انت متأكد من انك تريد حذف هذا الطبيب ${doctor.nameAr}`, "Warning", {
-        confirmButtonText: "تأكيد",
-        cancelButtonText: "إلغاء",
-        type: "warning",
-      })
+      this.$confirm(
+        `هل انت متأكد من انك تريد حذف هذا الطبيب ${doctor.nameAr}`,
+        "Warning",
+        {
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "إلغاء",
+          type: "warning",
+        }
+      )
         .then(async () => {
           this.$message({
             type: "success",
